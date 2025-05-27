@@ -57,7 +57,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "plane.authentication.middleware.session.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "crum.CurrentRequestUserMiddleware",
@@ -308,11 +308,11 @@ ADMIN_SESSION_COOKIE_NAME = "admin-session-id"
 ADMIN_SESSION_COOKIE_AGE = os.environ.get("ADMIN_SESSION_COOKIE_AGE", 3600)
 
 # CSRF cookies
-CSRF_COOKIE_SECURE = secure_origins
-CSRF_COOKIE_HTTPONLY = True
-CSRF_TRUSTED_ORIGINS = cors_allowed_origins
-CSRF_COOKIE_DOMAIN = os.environ.get("COOKIE_DOMAIN", None)
-CSRF_FAILURE_VIEW = "plane.authentication.views.common.csrf_failure"
+# CSRF_COOKIE_SECURE = secure_origins
+# CSRF_COOKIE_HTTPONLY = True
+# CSRF_TRUSTED_ORIGINS = cors_allowed_origins
+# CSRF_COOKIE_DOMAIN = os.environ.get("COOKIE_DOMAIN", None)
+# CSRF_FAILURE_VIEW = "plane.authentication.views.common.csrf_failure"
 
 ######  Base URLs ######
 
