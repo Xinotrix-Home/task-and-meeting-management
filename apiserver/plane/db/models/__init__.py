@@ -72,6 +72,13 @@ from .workspace import (
     WorkspaceUserPreference,
 )
 
+from .meeting import(
+    Meeting,
+    MeetingParticipant,
+    MeetingAgenda,
+    AgendaAssignee,
+)
+
 from .favorite import UserFavorite
 
 from .issue_type import IssueType

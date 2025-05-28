@@ -128,3 +128,7 @@ from .draft import (
     DraftIssueSerializer,
     DraftIssueDetailSerializer,
 )
+
+from .meeting import (
+    AgendaAssigneeSerializer,
+)

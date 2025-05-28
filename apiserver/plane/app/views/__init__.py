@@ -120,6 +120,8 @@ from .issue.base import (
     IssueDetailIdentifierEndpoint,
 )
 
+from .meeting.base import WorkspaceMeetingViewSet
+
 from .issue.activity import IssueActivityEndpoint
 
 from .issue.archive import IssueArchiveViewSet, BulkArchiveIssuesEndpoint
