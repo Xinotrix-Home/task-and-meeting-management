@@ -131,4 +131,5 @@ from .draft import (
 
 from .meeting import (
     AgendaAssigneeSerializer,
+    MeetingSerializer
 )
