@@ -11,13 +11,10 @@ from plane.app.serializers.user import UserLiteSerializer
 
 class AgendaAssigneeSerializer(serializers.ModelSerializer):
     user = UserLiteSerializer(read_only=True)
-    user_id = serializers.PrimaryKeyRelatedField(
-        source="user", queryset=settings.AUTH_USER_MODEL.objects.all(), write_only=True
-    )
 
     class Meta:
         model = AgendaAssignee
-        fields = ("id", "user", "user_id")
+        fields = ("id", "user")
 
 
 class MeetingAgendaSerializer(serializers.ModelSerializer):
@@ -53,26 +50,15 @@ class MeetingAgendaSerializer(serializers.ModelSerializer):
 
 class MeetingParticipantSerializer(serializers.ModelSerializer):
     user = UserLiteSerializer(read_only=True)
-    user_id = serializers.PrimaryKeyRelatedField(
-        source="user", queryset=settings.AUTH_USER_MODEL.objects.all(), write_only=True
-    )
 
     class Meta:
         model = MeetingParticipant
-        fields = ("id", "user", "user_id", "has_accepted", "has_attended")
+        fields = ("id", "user", "has_accepted", "has_attended")
 
 
 class MeetingSerializer(serializers.ModelSerializer):
     host = UserLiteSerializer(read_only=True)
     chairperson = UserLiteSerializer(read_only=True)
-    host_id = serializers.PrimaryKeyRelatedField(
-        source="host", queryset=settings.AUTH_USER_MODEL.objects.all(), write_only=True
-    )
-    chairperson_id = serializers.PrimaryKeyRelatedField(
-        source="chairperson", 
-        queryset=settings.AUTH_USER_MODEL.objects.all(), 
-        write_only=True
-    )
 
     participants = MeetingParticipantSerializer(many=True)
     agendas = MeetingAgendaSerializer(many=True)
@@ -81,7 +67,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         fields = (
             "id", "subject", "description", "start_time", "end_time",
-            "host", "host_id", "chairperson", "chairperson_id",
+            "host", "chairperson",
             "participants", "agendas",
         )
 
