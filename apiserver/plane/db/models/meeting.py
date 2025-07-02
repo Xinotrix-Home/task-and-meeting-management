@@ -45,7 +45,7 @@ class Meeting(BaseModel):
 
 class MeetingParticipant(BaseModel):
     meeting = models.ForeignKey(
-        "meetings.Meeting",
+        "db.Meeting",
         on_delete=models.CASCADE,
         related_name="participants"
     )
@@ -68,9 +68,27 @@ class MeetingParticipant(BaseModel):
         return f"{self.user.email} in {self.meeting.subject}"
 
 
+class MeetingAttachment(BaseModel):
+    meeting = models.ForeignKey(
+        "db.Meeting",
+        on_delete=models.CASCADE,
+        related_name="attachments"
+    )
+    file = models.FileField(upload_to="meeting_attachments/")
+
+    class Meta:
+        db_table = "meeting_attachments"
+        ordering = ("-created_at",)
+        verbose_name = "Meeting Attachment"
+        verbose_name_plural = "Meeting Attachments"
+
+    def __str__(self):
+        return f"Attachment for {self.meeting.subject}"
+
+
 class MeetingAgenda(BaseModel):
     meeting = models.ForeignKey(
-        "meetings.Meeting",
+        "db.Meeting",
         on_delete=models.CASCADE,
         related_name="agendas"
     )
@@ -89,7 +107,7 @@ class MeetingAgenda(BaseModel):
 
 class AgendaAssignee(BaseModel):
     agenda = models.ForeignKey(
-        "meetings.MeetingAgenda",
+        "db.MeetingAgenda",
         on_delete=models.CASCADE,
         related_name="assignees"
     )

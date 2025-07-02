@@ -6,6 +6,7 @@ from .estimate import urlpatterns as estimate_urls
 from .external import urlpatterns as external_urls
 from .intake import urlpatterns as intake_urls
 from .issue import urlpatterns as issue_urls
+from .meeting import urlpatterns as meeting_urls
 from .module import urlpatterns as module_urls
 from .notification import urlpatterns as notification_urls
 from .page import urlpatterns as page_urls
@@ -26,6 +27,7 @@ urlpatterns = [
     *external_urls,
     *intake_urls,
     *issue_urls,
+    *meeting_urls,
     *module_urls,
     *notification_urls,
     *page_urls,

@@ -6,9 +6,10 @@ from rest_framework import status
 
 # Meeting module imports
 from plane.db.models import (
-    Meeting, 
+    Meeting,
+    Workspace,
 )
-from plane.app.serializers import MeetingSerializer
+from plane.app.serializers import MeetingSerializer, MeetingListSerializer
 
 
 class WorkspaceMeetingViewSet(BaseViewSet):
@@ -25,21 +26,27 @@ class WorkspaceMeetingViewSet(BaseViewSet):
     )
     def list(self, request, slug):
         queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True)
+        serializer = MeetingListSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def create(self, request, slug):
+        try:
+            workspace = Workspace.objects.get(slug=slug)
+        except Workspace.DoesNotExist:
+            return Response({"detail": "Workspace not found."}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = self.serializer_class(data=request.data, context={"request": request})
         if serializer.is_valid():
-            serializer.save(workspace=request.workspace, created_by=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.save(workspace=workspace, created_by=request.user)
+            
+            return Response(MeetingListSerializer(serializer.instance).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def retrieve(self, request, slug, pk):
         instance = self.get_object()
-        serializer = self.serializer_class(instance)
+        serializer = MeetingListSerializer(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
@@ -48,7 +55,7 @@ class WorkspaceMeetingViewSet(BaseViewSet):
         serializer = self.serializer_class(instance, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(MeetingListSerializer(serializer.instance).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")

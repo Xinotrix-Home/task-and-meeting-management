@@ -5,7 +5,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 # Local imports
-from plane.db.models import Meeting, MeetingParticipant, MeetingAgenda, AgendaAssignee
+from plane.db.models import Meeting, MeetingParticipant, MeetingAgenda, AgendaAssignee, User
 from plane.app.serializers.user import UserLiteSerializer
 
 
@@ -18,7 +18,12 @@ class AgendaAssigneeSerializer(serializers.ModelSerializer):
 
 
 class MeetingAgendaSerializer(serializers.ModelSerializer):
-    assignees = AgendaAssigneeSerializer(many=True)
+    # assignees = AgendaAssigneeSerializer(many=True)
+    assignees = serializers.ListField(
+        child=serializers.PrimaryKeyRelatedField(queryset=User.objects.all()),
+        write_only=True,
+        required=False,
+    )
 
     class Meta:
         model = MeetingAgenda
@@ -48,6 +53,17 @@ class MeetingAgendaSerializer(serializers.ModelSerializer):
         return instance
 
 
+class MeetingAgendaListSerializer(serializers.ModelSerializer):
+    assignees = AgendaAssigneeSerializer(many=True)
+
+    class Meta:
+        model = MeetingAgenda
+        fields = ("id", "title", "duration_minutes", "assignees")
+
+
+
+
+
 class MeetingParticipantSerializer(serializers.ModelSerializer):
     user = UserLiteSerializer(read_only=True)
 
@@ -57,11 +73,14 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    host = UserLiteSerializer(read_only=True)
-    chairperson = UserLiteSerializer(read_only=True)
-
-    participants = MeetingParticipantSerializer(many=True)
+    participants = serializers.ListField(
+        child=serializers.UUIDField()
+    )
+    # agendas = serializers.ListField(
+    #     child=serializers.UUIDField()
+    # )
     agendas = MeetingAgendaSerializer(many=True)
+    
 
     class Meta:
         model = Meeting
@@ -72,33 +91,37 @@ class MeetingSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        participants_data = validated_data.pop("participants", [])
+        participants_ids = validated_data.pop("participants", [])
+        print("participants_ids", participants_ids)
         agendas_data = validated_data.pop("agendas", [])
+        print("agendas_data", agendas_data)
         meeting = Meeting.objects.create(**validated_data)
 
-        for pdata in participants_data:
-            MeetingParticipant.objects.create(meeting=meeting, **pdata)
+        for user_id in participants_ids:
+            MeetingParticipant.objects.create(meeting=meeting, user_id=user_id)
 
         for adata in agendas_data:
             assignees = adata.pop("assignees", [])
+            print("assignees", assignees)
             agenda = MeetingAgenda.objects.create(meeting=meeting, **adata)
             for assignee in assignees:
-                AgendaAssignee.objects.create(agenda=agenda, **assignee)
+                AgendaAssignee.objects.create(agenda=agenda, user=assignee)
 
         return meeting
 
     def update(self, instance, validated_data):
-        participants_data = validated_data.pop("participants", [])
+        participants_ids = validated_data.pop("participants", [])
+        print("participants_ids", participants_ids)
         agendas_data = validated_data.pop("agendas", [])
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        if participants_data:
+        if participants_ids:
             instance.participants.all().delete()
-            for pdata in participants_data:
-                MeetingParticipant.objects.create(meeting=instance, **pdata)
+            for user_id in participants_ids:
+                MeetingParticipant.objects.create(meeting=instance, user_id=user_id)
 
         if agendas_data:
             instance.agendas.all().delete()
@@ -106,6 +129,21 @@ class MeetingSerializer(serializers.ModelSerializer):
                 assignees = adata.pop("assignees", [])
                 agenda = MeetingAgenda.objects.create(meeting=instance, **adata)
                 for assignee in assignees:
-                    AgendaAssignee.objects.create(agenda=agenda, **assignee)
+                    AgendaAssignee.objects.create(agenda=agenda, user=assignee)
 
         return instance
+
+class MeetingListSerializer(serializers.ModelSerializer):
+    host = UserLiteSerializer()
+    chairperson = UserLiteSerializer()
+
+    participants = MeetingParticipantSerializer(many=True)
+    agendas = MeetingAgendaListSerializer(many=True)
+
+    class Meta:
+        model = Meeting
+        fields = (
+            "id", "subject", "description", "start_time", "end_time",
+            "host", "chairperson",
+            "participants", "agendas",
+        )
