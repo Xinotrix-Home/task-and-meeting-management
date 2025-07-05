@@ -835,3 +835,25 @@ class IssueDescriptionVersionDetailSerializer(BaseSerializer):
             "updated_by",
         ]
         read_only_fields = ["workspace", "project", "issue"]
+
+
+
+class IssueAssigneeDetailSerializer(BaseSerializer):
+    ## Contain only flat fields
+    assignees = UserLiteSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Issue
+        fields = [
+            "id",
+            "name",
+            "description",
+            "description_html",
+            "priority",
+            "start_date",
+            "target_date",
+            "assignees",
+            "sequence_id",
+            "sort_order",
+            "is_draft",
+        ]

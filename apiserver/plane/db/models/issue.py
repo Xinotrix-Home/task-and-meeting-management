@@ -123,6 +123,13 @@ class Issue(ProjectBaseModel):
         blank=True,
         related_name="state_issue",
     )
+    agenda = models.ForeignKey(
+        "db.MeetingAgenda",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="issue_agenda",
+    )
     point = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(12)], null=True, blank=True
     )
