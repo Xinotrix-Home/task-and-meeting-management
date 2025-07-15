@@ -10,6 +10,12 @@ from plane.db.models import BaseModel
 
 
 class Meeting(BaseModel):
+    STATUS_CHOICES = (
+        ("draft", "Draft"),
+        ("submitted", "Submitted"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
+    )
     workspace = models.ForeignKey(
         "db.Workspace",
         on_delete=models.CASCADE,
@@ -32,6 +38,12 @@ class Meeting(BaseModel):
         null=True,
         related_name="chaired_meetings"
     )
+    status = models.CharField(
+        max_length=30,
+        choices=STATUS_CHOICES,
+        verbose_name="Meeting Status",
+        default="draft",
+    )
 
     class Meta:
         db_table = "meetings"
@@ -41,6 +53,36 @@ class Meeting(BaseModel):
 
     def __str__(self):
         return f"{self.subject} ({self.start_time})"
+
+    # def save(self, *args, **kwargs):
+    #     is_new = self._state.adding
+    #     old_status = None
+
+    #     if not is_new:
+    #         old_status = Meeting.objects.filter(pk=self.pk).values_list("status", flat=True).first()
+
+    #     super().save(*args, **kwargs)
+
+    #     # Now check if status was changed to "submitted"
+    #     if old_status != "submitted" and self.status == "submitted":
+    #         self.send_submission_emails()
+
+    # def send_submission_emails(self):
+    #     from django.core.mail import send_mass_mail
+
+    #     participants = self.participants.select_related("user").all()
+    #     subject = f"Meeting Submitted: {self.subject}"
+    #     message = f"The meeting '{self.subject}' scheduled on {self.start_time.strftime('%Y-%m-%d %H:%M')} has been submitted."
+
+    #     messages = []
+    #     for participant in participants:
+    #         email = participant.user.email
+    #         if email:
+    #             messages.append((subject, message, None, [email]))
+
+    #     if messages:
+    #         send_mass_mail(messages, fail_silently=False)
+
 
 
 class MeetingParticipant(BaseModel):

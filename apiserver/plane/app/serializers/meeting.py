@@ -136,7 +136,7 @@ class MeetingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         fields = (
-            "id", "subject", "description", "start_time", "end_time",
+            "id", "subject", "description", "start_time", "end_time", 'status',
             "host", "chairperson",
             "participants", "agendas",
         )
