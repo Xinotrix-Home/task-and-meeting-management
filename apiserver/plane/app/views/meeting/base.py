@@ -4,9 +4,11 @@ from plane.app.serializers.meeting import MeetingAgendaSerializer
 from plane.app.views.base import BaseViewSet
 from rest_framework.response import Response
 from rest_framework import status
+from collections import defaultdict
 from django.db import transaction
 
 # Meeting module imports
+from plane.bgtasks.meeting_add_participant_email_task import meeting_add_participant_email
 from plane.db.models import (
     Meeting,
     Workspace,
@@ -15,11 +17,13 @@ from plane.app.serializers import MeetingSerializer, MeetingListSerializer
 from plane.db.models.issue import Issue, IssueAssignee
 from plane.db.models.meeting import AgendaAssignee, MeetingAgenda, MeetingParticipant
 from plane.db.models.project import Project
+from plane.utils.host import base_host
 
 
 class WorkspaceMeetingViewSet(BaseViewSet):
     serializer_class = MeetingSerializer
     model = Meeting
+
 
     def get_queryset(self):
         return self.model.objects.filter(
@@ -30,9 +34,32 @@ class WorkspaceMeetingViewSet(BaseViewSet):
         allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE"
     )
     def list(self, request, slug):
+
+        # meeting_add_participant_email.delay()
+        STATUS_LABELS = {
+            "upcoming": "Upcoming",
+            "completed": "Completed",
+            "draft": "Draft",
+            "cancelled": "Cancelled",
+            "submitted": "Submitted",
+        }
         queryset = self.get_queryset()
-        serializer = MeetingListSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        grouped_meetings = defaultdict(list)
+
+        for meeting in queryset:
+            status_key = meeting.status.lower()
+            grouped_meetings[status_key].append(meeting)
+
+        response_data = []
+        for key, meetings in grouped_meetings.items():
+            serializer = MeetingListSerializer(meetings, many=True)
+            response_data.append({
+                "label": STATUS_LABELS.get(key, key.title()),
+                "meetings": serializer.data,
+            })
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def create(self, request, slug):
@@ -67,11 +94,23 @@ class WorkspaceMeetingViewSet(BaseViewSet):
                         AgendaAssignee(agenda=agenda, user_id=user) for user in assignees
                     ])
 
-            instance = Meeting.objects.prefetch_related(
-                "participants",
-                "agendas__issue_agenda",  # prefetch issues
-                "agendas__assignees"      # if needed
-            ).select_related("host", "chairperson").get(id=serializer.instance.id)
+            meeting_participants = MeetingParticipant.objects.filter(
+                meeting_id=serializer.data.get("id", None)
+            )
+
+
+            if serializer.data.get("status", None) == "submitted":
+                print(f"Meeting invite email task queued for {meeting_participants}")
+                [
+                    meeting_add_participant_email(
+                        base_host(request=request, is_app=True),
+                        meeting_participant.id,
+                        request.user.id,
+                    )
+                    for meeting_participant in meeting_participants
+                ]
+
+            instance = Meeting.objects.get(id=serializer.data.get("id", None))
             serializer = MeetingListSerializer(instance)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

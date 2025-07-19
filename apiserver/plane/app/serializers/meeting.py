@@ -111,7 +111,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         fields = (
             "id", "subject", "description", "start_time", "end_time",
-            "host", "chairperson",
+            "host", "chairperson", "status"
         )
 
     def create(self, validated_data):
