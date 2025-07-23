@@ -25,6 +25,7 @@ class Meeting(BaseModel):
     description = models.TextField(blank=True, null=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
+    summary = models.CharField(max_length=255, null=True, blank=True)
 
     host = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -18,6 +18,15 @@ class AgendaAssigneeSerializer(serializers.ModelSerializer):
         fields = ("id", "user")
 
 
+class AgendaAssigneeUserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AgendaAssignee
+        fields = ()
+
+    def to_representation(self, instance):
+        return UserLiteSerializer(instance.user).data
+
+
 class IssueCreateSerializerFromAgenda(serializers.Serializer):
     name = serializers.CharField()
     description = serializers.CharField(required=False, allow_blank=True)
@@ -81,7 +90,7 @@ class MeetingAgendaSerializer(serializers.ModelSerializer):
 
 
 class MeetingAgendaListSerializer(serializers.ModelSerializer):
-    assignees = AgendaAssigneeSerializer(many=True)
+    assignees = AgendaAssigneeUserListSerializer(many=True)
     issues = serializers.SerializerMethodField()
 
     class Meta:
@@ -104,6 +113,14 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
         model = MeetingParticipant
         fields = ("id", "user", "has_accepted", "has_attended")
 
+class MeetingParticipantUserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeetingParticipant
+        fields = ()
+
+    def to_representation(self, instance):
+        return UserLiteSerializer(instance.user).data
+
 
 class MeetingSerializer(serializers.ModelSerializer):
 
@@ -111,7 +128,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         fields = (
             "id", "subject", "description", "start_time", "end_time",
-            "host", "chairperson", "status"
+            "host", "chairperson", "status", "summary"
         )
 
     def create(self, validated_data):
@@ -130,7 +147,7 @@ class MeetingListSerializer(serializers.ModelSerializer):
     host = UserLiteSerializer()
     chairperson = UserLiteSerializer()
 
-    participants = MeetingParticipantSerializer(many=True)
+    participants = MeetingParticipantUserListSerializer(many=True)
     agendas = MeetingAgendaListSerializer(many=True)
 
     class Meta:
@@ -138,5 +155,5 @@ class MeetingListSerializer(serializers.ModelSerializer):
         fields = (
             "id", "subject", "description", "start_time", "end_time", 'status',
             "host", "chairperson",
-            "participants", "agendas",
+            "participants", "agendas", "summary"
         )
