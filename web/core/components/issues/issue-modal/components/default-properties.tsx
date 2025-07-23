@@ -199,7 +199,7 @@ export const IssueDefaultProperties: React.FC<TIssueDefaultPropertiesProps> = ob
           </div>
         )}
       />
-      {projectDetails?.cycle_view && (
+      {/* {projectDetails?.cycle_view && (
         <Controller
           control={control}
           name="cycle_id"
@@ -219,7 +219,7 @@ export const IssueDefaultProperties: React.FC<TIssueDefaultPropertiesProps> = ob
             </div>
           )}
         />
-      )}
+      )} */}
       {projectDetails?.module_view && workspaceSlug && (
         <Controller
           control={control}
@@ -233,7 +233,7 @@ export const IssueDefaultProperties: React.FC<TIssueDefaultPropertiesProps> = ob
                   onChange(moduleIds);
                   handleFormChange();
                 }}
-                placeholder={t("modules")}
+                placeholder={t("Group")}
                 buttonVariant="border-with-text"
                 tabIndex={getIndex("module_ids")}
                 multiple
@@ -243,7 +243,7 @@ export const IssueDefaultProperties: React.FC<TIssueDefaultPropertiesProps> = ob
           )}
         />
       )}
-      {projectId && areEstimateEnabledByProjectId(projectId) && (
+      {/* {projectId && areEstimateEnabledByProjectId(projectId) && (
         <Controller
           control={control}
           name="estimate_point"
@@ -263,7 +263,7 @@ export const IssueDefaultProperties: React.FC<TIssueDefaultPropertiesProps> = ob
             </div>
           )}
         />
-      )}
+      )} */}
       <div className="h-7">
         {parentId ? (
           <CustomMenu

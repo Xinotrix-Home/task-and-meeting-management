@@ -11,10 +11,6 @@ import Image404 from "@/public/404.svg";
 
 export const metadata: Metadata = {
   title: "404 - Page Not Found",
-  robots: {
-    index: false,
-    follow: false,
-  },
 };
 
 const PageNotFound = () => (

@@ -13,13 +13,12 @@ interface InsightTableProps<T extends Exclude<TAnalyticsTabsV2Base, "overview">>
   isLoading?: boolean;
   columns: ColumnDef<AnalyticsTableDataMap[T]>[];
   columnsLabels?: Record<string, string>;
-  headerText: string;
 }
 
 export const InsightTable = <T extends Exclude<TAnalyticsTabsV2Base, "overview">>(
   props: InsightTableProps<T>
 ): React.ReactElement => {
-  const { data, isLoading, columns, columnsLabels, headerText } = props;
+  const { data, isLoading, columns, columnsLabels } = props;
   const params = useParams();
   const { t } = useTranslation();
   const workspaceSlug = params.workspaceSlug.toString();
@@ -56,7 +55,7 @@ export const InsightTable = <T extends Exclude<TAnalyticsTabsV2Base, "overview">
         <DataTable
           columns={columns}
           data={data}
-          searchPlaceholder={`${data.length} ${headerText}`}
+          searchPlaceholder={`${data.length} Projects`}
           actions={(table: Table<AnalyticsTableDataMap[T]>) => (
             <Button
               variant="accent-primary"

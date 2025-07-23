@@ -49,6 +49,12 @@ export const WorkspaceMembersList: FC<{ searchQuery: string; isAdmin: boolean }>
   const searchedInvitationsIds = getSearchedWorkspaceInvitationIds(searchQuery);
   const memberDetails = searchedMemberIds?.map((memberId) => getWorkspaceMemberDetails(memberId));
 
+  console.log(
+    "members_data",
+    searchQuery
+    // workspaceMemberIds, searchedMemberIds, memberDetails
+  );
+
   return (
     <>
       <div className="divide-y-[0.5px] divide-custom-border-100 overflow-scroll	">
@@ -66,7 +72,9 @@ export const WorkspaceMembersList: FC<{ searchQuery: string; isAdmin: boolean }>
           title={
             <div className="flex w-full items-center justify-between pt-4">
               <div className="flex">
-                <h4 className="text-xl font-medium pt-2 pb-2">{t("workspace_settings.settings.members.pending_invites")}</h4>
+                <h4 className="text-xl font-medium pt-2 pb-2">
+                  {t("workspace_settings.settings.members.pending_invites")}
+                </h4>
                 {searchedInvitationsIds && (
                   <CountChip count={searchedInvitationsIds.length} className="h-5  m-auto ml-2" />
                 )}

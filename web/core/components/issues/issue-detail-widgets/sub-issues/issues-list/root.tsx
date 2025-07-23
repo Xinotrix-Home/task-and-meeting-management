@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 // plane imports
 import { ListFilter } from "lucide-react";
 import { EIssueServiceType, EIssuesStoreType } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
 import { GroupByColumnTypes, TIssue, TIssueServiceType, TSubIssueOperations } from "@plane/types";
 // hooks
 import { Button, Loader } from "@plane/ui";
@@ -42,12 +41,10 @@ export const SubIssuesListRoot: React.FC<Props> = observer((props) => {
     storeType = EIssuesStoreType.PROJECT,
     spacingLeft = 0,
   } = props;
-  const { t } = useTranslation();
   // store hooks
   const {
     subIssues: {
-      subIssuesByIssueId,
-      loader,
+      subIssuesByIssueId, loader,
       filters: { getSubIssueFilters, getGroupedSubWorkItems, getFilteredSubWorkItems, resetFilters },
     },
   } = useIssueDetail(issueServiceType);
@@ -80,15 +77,15 @@ export const SubIssuesListRoot: React.FC<Props> = observer((props) => {
 
   const isSubWorkItems = issueServiceType === EIssueServiceType.ISSUES;
 
-  if (loader === "init-loader") {
-    return (
-      <Loader className="space-y-2">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <Loader.Item key={index} height="35px" width="100%" />
-        ))}
-      </Loader>
-    );
-  }
+    if (loader === "init-loader") {
+      return (
+        <Loader className="space-y-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Loader.Item key={index} height="35px" width="100%" />
+          ))}
+        </Loader>
+      );
+    }
 
   return (
     <div className="relative">
@@ -96,19 +93,19 @@ export const SubIssuesListRoot: React.FC<Props> = observer((props) => {
         <SectionEmptyState
           title={
             !isSubWorkItems
-              ? t("sub_work_item.empty_state.list_filters.title")
-              : t("sub_work_item.empty_state.sub_list_filters.title")
+              ? "You don't have work items that match the filters you've applied."
+              : "You don't have sub-work items that match the filters you've applied."
           }
           description={
             !isSubWorkItems
-              ? t("sub_work_item.empty_state.list_filters.description")
-              : t("sub_work_item.empty_state.sub_list_filters.description")
+              ? "To see all work items, clear all applied filters."
+              : "To see all sub-work items, clear all applied filters."
           }
           icon={<ListFilter />}
           customClassName={storeType !== EIssuesStoreType.EPIC ? "border-none" : ""}
           actionElement={
             <Button variant="neutral-primary" size="sm" onClick={() => resetFilters(rootIssueId)}>
-              {t("sub_work_item.empty_state.list_filters.action")}
+              Clear filters
             </Button>
           }
         />

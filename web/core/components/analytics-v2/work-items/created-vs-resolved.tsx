@@ -33,9 +33,8 @@ const CreatedVsResolved = observer(() => {
         ...(selectedProjects?.length > 0 && { project_ids: selectedProjects?.join(",") }),
         ...(selectedCycle ? { cycle_id: selectedCycle } : {}),
         ...(selectedModule ? { module_id: selectedModule } : {}),
-      },
-        isPeekView
-      )
+        ...(isPeekView ? { peek_view: true } : {}),
+      })
   );
   const parsedData: TChartData<string, string>[] = useMemo(() => {
     if (!createdVsResolvedData?.data) return [];

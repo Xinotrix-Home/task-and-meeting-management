@@ -17,7 +17,10 @@ export abstract class APIService {
 
   private setupInterceptors() {
     this.axiosInstance.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        // console.log("config_response", response)
+        return response;
+      },
       (error) => {
         if (error.response && error.response.status === 401) {
           const currentPath = window.location.pathname;
@@ -29,6 +32,7 @@ export abstract class APIService {
   }
 
   get(url: string, params = {}, config: AxiosRequestConfig = {}) {
+    // console.log("config_data", params, config)
     return this.axiosInstance.get(url, {
       ...params,
       ...config,

@@ -162,7 +162,7 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
   useEffect(() => {
     if (isDirty) {
       if (workItemTemplateId) {
-        // reset work item template id
+        // reset task template id
         setWorkItemTemplateId(null);
         reset({ ...DEFAULT_WORK_ITEM_FORM_VALUES, project_id: projectId });
         editorRef.current?.clearEditor();
@@ -279,7 +279,7 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: "Error!",
-        message: "Failed to move work item to project. Please try again.",
+        message: "Failed to move task to project. Please try again.",
       });
     } finally {
       setIsMoving(false);
@@ -380,11 +380,11 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
               <h3 className="text-xl font-medium text-custom-text-200 pb-2">{modalTitle}</h3>
               <div className="flex items-center justify-between pt-2 pb-4">
                 <div className="flex items-center gap-x-1">
-                  <IssueProjectSelect
+                  {/* <IssueProjectSelect
                     control={control}
                     disabled={!!data?.id || !!data?.sourceIssueId || isProjectSelectionDisabled}
                     handleFormChange={handleFormChange}
-                  />
+                  /> */}
                   {projectId && storeType !== EIssuesStoreType.EPIC && (
                     <IssueTypeSelect
                       control={control}

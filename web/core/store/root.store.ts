@@ -14,6 +14,7 @@ import { EditorAssetStore, IEditorAssetStore } from "./editor/asset.store";
 import { IProjectEstimateStore, ProjectEstimateStore } from "./estimates/project-estimate.store";
 import { EventTrackerStore, IEventTrackerStore } from "./event-tracker.store";
 import { FavoriteStore, IFavoriteStore } from "./favorite.store";
+import { MeetingStore, IMeetingStore } from "./meeting/meeting.store";
 import { GlobalViewStore, IGlobalViewStore } from "./global-view.store";
 import { IProjectInboxStore, ProjectInboxStore } from "./inbox/project-inbox.store";
 import { InstanceStore, IInstanceStore } from "./instance.store";
@@ -63,6 +64,7 @@ export class CoreRootStore {
   multipleSelect: IMultipleSelectStore;
   workspaceNotification: IWorkspaceNotificationStore;
   favorite: IFavoriteStore;
+  meeting: IMeetingStore;
   transient: ITransientStore;
   stickyStore: IStickyStore;
   editorAssetStore: IEditorAssetStore;
@@ -93,6 +95,7 @@ export class CoreRootStore {
     this.projectEstimate = new ProjectEstimateStore(this);
     this.workspaceNotification = new WorkspaceNotificationStore(this);
     this.favorite = new FavoriteStore(this);
+    this.meeting = new MeetingStore(this)
     this.transient = new TransientStore();
     this.stickyStore = new StickyStore();
     this.editorAssetStore = new EditorAssetStore();
@@ -127,6 +130,7 @@ export class CoreRootStore {
     this.projectEstimate = new ProjectEstimateStore(this);
     this.workspaceNotification = new WorkspaceNotificationStore(this);
     this.favorite = new FavoriteStore(this);
+    this.meeting = new MeetingStore(this)
     this.transient = new TransientStore();
     this.stickyStore = new StickyStore();
     this.editorAssetStore = new EditorAssetStore();

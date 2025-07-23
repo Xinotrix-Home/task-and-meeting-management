@@ -39,9 +39,8 @@ const ProjectInsights = observer(() => {
         ...(selectedProjects?.length > 0 && { project_ids: selectedProjects?.join(",") }),
         ...(selectedCycle ? { cycle_id: selectedCycle } : {}),
         ...(selectedModule ? { module_id: selectedModule } : {}),
-      },
-        isPeekView
-      )
+        ...(isPeekView ? { peek_view: true } : {}),
+      })
   );
 
   return (

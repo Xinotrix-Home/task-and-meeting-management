@@ -6,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 import { UserCircle2 } from "lucide-react";
 import { Transition, Dialog } from "@headlessui/react";
 // plane imports
-import { ACCEPTED_AVATAR_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE, MAX_FILE_SIZE } from "@plane/constants";
+import { MAX_FILE_SIZE } from "@plane/constants";
 import { EFileAssetType } from "@plane/types/src/enums";
 import { Button, TOAST_TYPE, setToast } from "@plane/ui";
 // helpers
@@ -35,7 +35,9 @@ export const UserImageUploadModal: React.FC<Props> = observer((props) => {
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    accept: ACCEPTED_AVATAR_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE,
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".webp"],
+    },
     maxSize: MAX_FILE_SIZE,
     multiple: false,
   });
