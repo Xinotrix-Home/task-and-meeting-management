@@ -147,9 +147,11 @@ class WorkspaceMeetingViewSet(BaseViewSet):
             Issue.objects.filter(agenda__in=instance.agendas.all()).delete()
 
             # Then delete agendas
-            instance.agendas.all().delete()
+            # instance.agendas.all().delete()
+            MeetingAgenda.objects.filter(meeting=instance).delete()
 
             for agenda_data in agendas_data:
+                ids = agenda_data.pop("id", [])
                 assignees = agenda_data.pop("assignees", [])
                 issues = agenda_data.pop("issues", [])
                 agenda = MeetingAgenda.objects.create(**agenda_data, meeting=instance)
@@ -164,6 +166,7 @@ class WorkspaceMeetingViewSet(BaseViewSet):
                 )[0]
 
                 for issue in issues:
+                    ids = issue.pop("id", [])
                     assignee_ids = issue.pop("assignees", [])
                     new_issue = Issue.objects.create(agenda=agenda, workspace=workspace, project=project, **issue)
 
