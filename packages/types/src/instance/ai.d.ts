@@ -1,1 +1,1 @@
-export type TInstanceAIConfigurationKeys = "LLM_API_KEY" | "LLM_MODEL";
+export type TInstanceAIConfigurationKeys = "OPENAI_API_KEY" | "GPT_ENGINE";

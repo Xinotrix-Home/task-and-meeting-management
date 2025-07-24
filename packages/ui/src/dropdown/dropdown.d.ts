@@ -4,7 +4,7 @@ export interface IDropdown {
   // root props
   onOpen?: () => void;
   onClose?: () => void;
-  containerClassName?: string | ((isOpen: boolean) => string);
+  containerClassName?: (isOpen: boolean) => string;
   tabIndex?: number;
   placement?: Placement;
   disabled?: boolean;

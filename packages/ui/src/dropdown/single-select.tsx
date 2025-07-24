@@ -1,14 +1,19 @@
-import { Combobox } from "@headlessui/react";
-import sortBy from "lodash/sortBy";
 import React, { FC, useMemo, useRef, useState } from "react";
+import sortBy from "lodash/sortBy";
+// headless ui
+import { Combobox } from "@headlessui/react";
+// popper-js
 import { usePopper } from "react-popper";
-// plane imports
+// plane helpers
 import { useOutsideClickDetector } from "@plane/hooks";
-// local imports
-import { cn } from "../../helpers";
-import { useDropdownKeyPressed } from "../hooks/use-dropdown-key-pressed";
+// components
 import { DropdownButton } from "./common";
 import { DropdownOptions } from "./common/options";
+// hooks
+import { useDropdownKeyPressed } from "../hooks/use-dropdown-key-pressed";
+// helper
+import { cn } from "../../helpers";
+// types
 import { ISingleSelectDropdown } from "./dropdown";
 
 export const Dropdown: FC<ISingleSelectDropdown> = (props) => {
@@ -113,10 +118,7 @@ export const Dropdown: FC<ISingleSelectDropdown> = (props) => {
       ref={dropdownRef}
       value={value}
       onChange={onChange}
-      className={cn(
-        "h-full",
-        typeof containerClassName === "function" ? containerClassName(isOpen) : containerClassName
-      )}
+      className={cn("h-full", containerClassName)}
       tabIndex={tabIndex}
       onKeyDown={handleKeyDown}
       disabled={disabled}

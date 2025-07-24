@@ -50,7 +50,7 @@ export const getGroupByColumns = (
     case "created_by":
       return getCreatedByColumns(member) as any;
     default:
-      if (includeNone) return [{ id: `All Issues`, name: `All work items`, payload: {}, icon: undefined }];
+      if (includeNone) return [{ id: `All Issues`, name: `All tasks`, payload: {}, icon: undefined }];
   }
 };
 
