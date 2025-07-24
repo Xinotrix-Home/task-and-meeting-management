@@ -8,6 +8,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   basePath: process.env.NEXT_PUBLIC_ADMIN_BASE_PATH || "",
   transpilePackages: [
     "@plane/constants",
