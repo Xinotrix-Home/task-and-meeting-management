@@ -134,7 +134,7 @@ const MeetingCardList = observer(() => {
                       )}
 
                       {/* Edit Meeting */}
-                      {!(meetingGroup?.label === "Completed") && (
+                      {!(meetingGroup?.label === "Completed") && !isLive && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/update-meeting/${meeting?.id}`}

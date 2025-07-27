@@ -88,20 +88,20 @@ const MeetingViewForm = observer(() => {
               key={agenda.id || `agenda-${agendaIdx}`}
               className="border border-gray-700 rounded-lg p-5 space-y-5 bg-gray-800"
             >
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                <div className="md:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="">
                   <label className="block text-sm font-semibold text-gray-300 mb-1">Agenda</label>
                   <p className="bg-gray-900 px-4 py-2 rounded text-white">{agenda?.title || "—"}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-300 mb-1">Time (Minutes)</label>
+                  <p className="bg-gray-900 px-4 py-2 rounded text-white">{agenda?.duration_minutes ?? "—"}</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-gray-300 mb-1">Owner</label>
                   <p className="bg-gray-900 px-4 py-2 rounded text-white">
                     {agenda?.assignees?.map((u) => u?.display_name).join(", ") || "—"}
                   </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-1">Time (Minutes)</label>
-                  <p className="bg-gray-900 px-4 py-2 rounded text-white">{agenda?.duration_minutes ?? "—"}</p>
                 </div>
               </div>
 

@@ -6,25 +6,16 @@ import { setToast, TOAST_TYPE } from "@plane/ui";
 import { useMeeting } from "@/hooks/store/use-meeting";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "@plane/i18n";
-import { IMeeting, IUser } from "@plane/types/src/meeting";
+import { IAgenda, IMeeting, IUser } from "@plane/types/src/meeting";
 import { useMember } from "@/hooks/store";
 import useSWR from "swr";
 import { serializeMeetingForApi } from "@/services/meeting";
 import { MembersSettingsLoader } from "@/components/ui";
 
-// export const users: IUser[] = [
-//   {
-//     id: "9a1aeba2-8eee-4939-a7f9-833d49970f58",
-//     first_name: "Rahat Uddin",
-//     last_name: "Azad",
-//     display_name: "rahatuddin786",
-//   },
-// ];
-
 export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode: "create" | "update"; id?: string }) {
   const { workspaceSlug } = useParams();
   const { t } = useTranslation();
-  const { meetings, addMeeting } = useMeeting();
+  const { meetings, addMeeting, updateMeeting } = useMeeting();
   const router = useRouter();
   const {
     workspace: { fetchWorkspaceMembers, workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
@@ -40,7 +31,10 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
   const [host, setHost] = useState<IUser | {}>({});
   const [participants, setParticipants] = useState<IUser[]>([]);
   const [attachments, setAttachments] = useState<File[]>([]);
-  const [agendaItems, setAgendaItems] = useState([{ title: "", assignees: [] as IUser[], duration: "" }]);
+  const [agendaItems, setAgendaItems] = useState<IAgenda[]>([]);
+  // ([
+  //   // { title: "", assignees: [] as any, duration_minutes: "" }
+  // ]);
 
   // useSWR(
   //   workspaceSlug
@@ -65,7 +59,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
         setDate(extractDateOrTime(data?.start_time, "date"));
         setHost(data?.host ?? {});
         setParticipants(data?.participants);
-        // setAgendaItems(data?.agendas)
+        setAgendaItems([...data?.agendas]);
       }
     }
   }, [meetingMode, meetingId]);
@@ -98,7 +92,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
   //     : null
   // );
 
-  const addAgenda = () => setAgendaItems([...agendaItems, { title: "", assignees: [], duration: "" }]);
+  const addAgenda = () => setAgendaItems([...agendaItems, { title: "", assignees: [], duration_minutes: 0 }]);
 
   const removeAgenda = (index: number) => setAgendaItems(agendaItems.filter((_, i) => i !== index));
 
@@ -131,34 +125,58 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
       participants: participants,
       agendas: agendaItems.map((item) => ({
         title: item.title,
-        duration_minutes: Number.isNaN(Number(item.duration)) ? 0 : parseInt(item.duration),
+        duration_minutes: Number.isNaN(Number(item.duration_minutes)) ? 0 : Number(item.duration_minutes),
         assignees: item?.assignees,
+        issues: item?.issues ?? [],
       })),
       attachments,
       status: formSubmitState === "draft" ? "draft" : "submitted",
     };
 
-    console.log("met_data", payload, searchedMemberIds);
+    // console.log("met_data", payload, searchedMemberIds);
 
     setFormSubmitState("submitting");
-    addMeeting(workspaceSlug?.toString()!, payload)
-      .then(() => {
-        setToast({
-          type: TOAST_TYPE.SUCCESS,
-          title: t("success"),
-          message: t("meeting_created_successfully"),
+    // meetingMode, meetingId;
+    if (meetingMode === "update" && meetingId) {
+      updateMeeting(workspaceSlug?.toString()!, meetingId, payload)
+        .then(() => {
+          setToast({
+            type: TOAST_TYPE.SUCCESS,
+            title: t("success"),
+            message: t("meeting_created_successfully"),
+          });
+          // setFormSubmitState("");
+          router.push(`/${workspaceSlug}/meetings`);
+        })
+        .catch(() => {
+          setToast({
+            type: TOAST_TYPE.ERROR,
+            title: t("error"),
+            message: t("something_went_wrong"),
+          });
+          // setFormSubmitState("");
         });
-        setFormSubmitState("");
-        router.push(`/${workspaceSlug}/meetings`);
-      })
-      .catch(() => {
-        setToast({
-          type: TOAST_TYPE.ERROR,
-          title: t("error"),
-          message: t("something_went_wrong"),
+    }
+    {
+      addMeeting(workspaceSlug?.toString()!, payload)
+        .then(() => {
+          setToast({
+            type: TOAST_TYPE.SUCCESS,
+            title: t("success"),
+            message: t("meeting_created_successfully"),
+          });
+          setFormSubmitState("");
+          router.push(`/${workspaceSlug}/meetings`);
+        })
+        .catch(() => {
+          setToast({
+            type: TOAST_TYPE.ERROR,
+            title: t("error"),
+            message: t("something_went_wrong"),
+          });
+          setFormSubmitState("");
         });
-        setFormSubmitState("");
-      });
+    }
   };
 
   return (
@@ -371,9 +389,9 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
               <div className="col-span-12 md:col-span-2">
                 <label className="block mb-1 font-medium">Duration (min)</label>
                 <input
-                  type="number"
-                  value={item.duration}
-                  onChange={(e) => updateAgendaItem(idx, "duration", e.target.value)}
+                  type="text"
+                  value={item.duration_minutes}
+                  onChange={(e) => updateAgendaItem(idx, "duration_minutes", e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 px-4 py-2 rounded-lg"
                 />
               </div>
