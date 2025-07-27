@@ -147,7 +147,7 @@ const MeetingViewForm = observer(() => {
         </div>
       </div>
 
-      <div>
+      {/* <div>
         <label className="block mb-1 font-medium">Attachments</label>
         <div className="mt-3 space-y-2">
           {meetingData?.attachments?.map((file, idx) => (
@@ -169,7 +169,7 @@ const MeetingViewForm = observer(() => {
             </div>
           )) || <p className="bg-gray-800 px-4 py-2 rounded-lg">No attachments</p>}
         </div>
-      </div>
+      </div> */}
 
       {meetingData?.summary ? (
         <div>

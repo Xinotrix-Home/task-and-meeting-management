@@ -38,7 +38,7 @@ const MeetingCardList = observer(() => {
   const { workspaceSlug, projectId } = useParams();
   const meetingStore = useMeeting();
   const [searchQuery, setSearchQuery] = useState("");
-  const [showAllMeetingsLabel, setShowAllMeetingsLabel] = useState<string | null>(null);
+  const [showAllMeetingsLabel, setShowAllMeetingsLabel] = useState<string | null>("");
 
   const {
     project: { projectMemberIds, getProjectMemberDetails },
@@ -65,6 +65,7 @@ const MeetingCardList = observer(() => {
     setShowAllMeetingsLabel(meetingLabel);
   };
 
+  console.log("data_meet", groupedMeetings?.length, groupedMeetings);
   const renderMeetingsList = (meetingGroups: IMeetingGroup[]) => (
     <div className="grid grid-cols-1">
       {meetingGroups.map((meetingGroup) => {
@@ -75,6 +76,7 @@ const MeetingCardList = observer(() => {
           meetingsData = meetingGroup;
         }
         if (!meetingsData?.label) return;
+        const meetings = !(showAllMeetingsLabel === "") ? meetingGroup?.meetings : meetingGroup?.meetings?.slice(0, 5);
         return (
           <div key={meetingsData?.label} className="mb-6">
             <div className="flex justify-between items-center my-2">
@@ -105,7 +107,7 @@ const MeetingCardList = observer(() => {
                 <div className="text-center">Actions ⚙️</div>
               </div>
               {/* Meeting Rows */}
-              {meetingGroup?.meetings?.slice(0, 5)?.map((meeting) => {
+              {meetings?.map((meeting) => {
                 const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
                 return (
                   <div key={meeting?.id} className="grid grid-cols-7 items-center justify-center gap-5 px-4 py-3">

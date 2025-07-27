@@ -84,14 +84,6 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
   });
   // console.log("members_data", workspaceMemberIds, searchedMemberIds, memberDetails, users);
 
-  // useSWR(
-  //   workspaceSlug
-  //     ? async () => {
-  //         await fetchWorkspaceMembers(workspaceSlug.toString());
-  //       }
-  //     : null
-  // );
-
   const addAgenda = () => setAgendaItems([...agendaItems, { title: "", assignees: [], duration_minutes: 0 }]);
 
   const removeAgenda = (index: number) => setAgendaItems(agendaItems.filter((_, i) => i !== index));
@@ -112,6 +104,9 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const formState = formSubmitState;
+    setFormSubmitState("submitting");
+
     const start_time = `${date} ${startTime}:00`;
     const end_time = `${date} ${endTime}:00`;
 
@@ -130,12 +125,12 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
         issues: item?.issues ?? [],
       })),
       attachments,
-      status: formSubmitState === "draft" ? "draft" : "submitted",
+      status: formState === "draft" ? "draft" : "submitted",
     };
 
-    // console.log("met_data", payload, searchedMemberIds);
+    console.log("met_data", payload, searchedMemberIds);
+    // return;
 
-    setFormSubmitState("submitting");
     // meetingMode, meetingId;
     if (meetingMode === "update" && meetingId) {
       updateMeeting(workspaceSlug?.toString()!, meetingId, payload)
@@ -143,10 +138,10 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
           setToast({
             type: TOAST_TYPE.SUCCESS,
             title: t("success"),
-            message: t("meeting_created_successfully"),
+            message: t("meeting_updated_successfully"),
           });
-          // setFormSubmitState("");
           router.push(`/${workspaceSlug}/meetings`);
+          setFormSubmitState("");
         })
         .catch(() => {
           setToast({
@@ -154,10 +149,9 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
             title: t("error"),
             message: t("something_went_wrong"),
           });
-          // setFormSubmitState("");
+          setFormSubmitState("");
         });
-    }
-    {
+    } else {
       addMeeting(workspaceSlug?.toString()!, payload)
         .then(() => {
           setToast({
@@ -165,8 +159,8 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
             title: t("success"),
             message: t("meeting_created_successfully"),
           });
-          setFormSubmitState("");
           router.push(`/${workspaceSlug}/meetings`);
+          setFormSubmitState("");
         })
         .catch(() => {
           setToast({
@@ -418,7 +412,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
         </div>
       </div>
 
-      <div>
+      {/* <div>
         <label className="block mb-1 font-medium">Attachments</label>
         <input
           type="file"
@@ -448,12 +442,13 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className="flex justify-end gap-4 pt-4">
         {meetingMode === "create" && (
           <button
             type="submit"
+            disabled={formSubmitState === "submitting" ? true : false}
             onClick={() => setFormSubmitState("draft")}
             className="px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-700"
           >
@@ -463,10 +458,11 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
 
         <button
           type="submit"
+          disabled={formSubmitState === "submitting" ? true : false}
           onClick={() => setFormSubmitState("submit")}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
-          {meetingMode === "update" ? "Update" : "Submit"}
+          {meetingMode === "update" ? "Save" : "Submit"}
         </button>
       </div>
     </form>

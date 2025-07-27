@@ -25,6 +25,7 @@ const MeetingMinutesForm = observer(() => {
   } = useMember();
   const { meetings, updateMeeting } = useMeeting();
   const { meetingId, workspaceSlug } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // useSWR(
   //   workspaceSlug
@@ -114,13 +115,14 @@ const MeetingMinutesForm = observer(() => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const payload = {
       ...meetingData,
       agendas: agendaItems,
       summary,
     };
-    console.log("Final Meeting Minutes Data:", payload);
+    // console.log("Final Meeting Minutes Data:", payload);
 
     if (meetingData?.id) {
       updateMeeting(workspaceSlug?.toString()!, meetingData?.id, payload)
@@ -128,10 +130,11 @@ const MeetingMinutesForm = observer(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
             title: t("success"),
-            message: t("meeting_created_successfully"),
+            message: t("meeting_minutes_saved_successfully"),
           });
-          // setFormSubmitState("");
+
           router.push(`/${workspaceSlug}/meetings`);
+          setIsSubmitting(false);
         })
         .catch(() => {
           setToast({
@@ -139,7 +142,7 @@ const MeetingMinutesForm = observer(() => {
             title: t("error"),
             message: t("something_went_wrong"),
           });
-          // setFormSubmitState("");
+          setIsSubmitting(false);
         });
     }
   };
@@ -160,7 +163,7 @@ const MeetingMinutesForm = observer(() => {
       last_name,
     };
   });
-  console.log("members_data", meetingData, searchedMemberIds);
+  // console.log("members_data", meetingData, searchedMemberIds);
 
   return (
     <form
@@ -393,8 +396,12 @@ const MeetingMinutesForm = observer(() => {
 
       {/* Submit Buttons */}
       <div className="flex justify-end gap-3 pt-4">
-        <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
-          Submit
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+        >
+          Save
         </button>
       </div>
     </form>
