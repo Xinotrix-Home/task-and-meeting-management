@@ -22,7 +22,9 @@ export const getSidebarNavigationItemIcon = (key: string, className: string = ""
       return <PenSquare className={cn("size-4 flex-shrink-0", className)} />;
     case "archives":
       return <ArchiveIcon className={cn("size-4 flex-shrink-0", className)} />;
-    case "meetings": // ✅ ADD THIS
+    case "meetings":
       return <CalendarDays className={cn("size-4 flex-shrink-0", className)} />;
+    case "tasks":
+      return <Layers className={cn("size-4 flex-shrink-0", className)} />;
   }
 };

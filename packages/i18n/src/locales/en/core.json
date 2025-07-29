@@ -2,6 +2,7 @@
   "sidebar": {
     "projects": "Projects",
     "meetings": "Meetings",
+    "tasks": "Tasks",
     "pages": "Pages",
     "new_work_item": "New work item",
     "home": "Home",
@@ -19,7 +20,6 @@
     "pro": "Pro",
     "upgrade": "Upgrade"
   },
-
   "auth": {
     "common": {
       "email": {
