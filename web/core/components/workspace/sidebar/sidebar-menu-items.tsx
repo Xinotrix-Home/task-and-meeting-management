@@ -37,7 +37,7 @@ export const SidebarMenuItems = observer(() => {
       }).sort((a, b) => a.sort_order - b.sort_order),
     [currentWorkspaceNavigationPreferences]
   );
-  console.log("side_bars", WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS_LINKS);
+
   return (
     <>
       <div
