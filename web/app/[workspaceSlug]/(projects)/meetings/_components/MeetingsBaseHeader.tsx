@@ -14,8 +14,8 @@ import { BreadcrumbLink } from "@/components/common";
 // plane constants
 // hooks
 import { useUserPermissions } from "@/hooks/store";
-import { MeetingSearch } from "./MeetingSearch";
 import MeetingHeaderFilters from "./MeetingHeaderFilters";
+import { MeetingSearch } from "./MeetingSearch";
 
 export const MeetingsBaseHeader = observer(() => {
   const pathname = usePathname();
@@ -33,24 +33,22 @@ export const MeetingsBaseHeader = observer(() => {
         <Breadcrumbs>
           <Breadcrumbs.BreadcrumbItem
             type="text"
-            link={
-              <BreadcrumbLink
-                label="Meetings"
-                icon={<CalendarDays className="h-4 w-4 text-custom-text-300" />}
-              />
-            }
+            link={<BreadcrumbLink label="Meetings" icon={<CalendarDays className="h-4 w-4 text-custom-text-300" />} />}
           />
           {isArchived && <Breadcrumbs.BreadcrumbItem type="text" link={<BreadcrumbLink label="Archived" />} />}
         </Breadcrumbs>
       </Header.LeftItem>
       <Header.RightItem>
-        <MeetingSearch/>
-         <div className="hidden md:flex">
-             <MeetingHeaderFilters />
-         </div>
+        <MeetingSearch />
+        <div className="hidden md:flex">
+          <MeetingHeaderFilters />
+        </div>
         {isAuthorizedUser && !isArchived ? (
           <Button size="sm" className="items-center gap-1">
-           <Link href={`/${pathname.split("/")[1]}/meetings/create-meeting`} className="btn btn-primary flex items-center gap-2">
+            <Link
+              href={`/${pathname.split("/")[1]}/meetings/create-meeting`}
+              className="btn btn-primary flex items-center gap-2"
+            >
               <Plus size={16} />
               <span className="hidden sm:inline-block">Create Meeting</span>
             </Link>

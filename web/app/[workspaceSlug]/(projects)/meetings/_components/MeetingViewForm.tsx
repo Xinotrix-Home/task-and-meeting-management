@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Eye, Plus, Trash2, X } from "lucide-react"; // You already use these
-import { setToast, TOAST_TYPE } from "@plane/ui";
-import { useMeeting } from "@/hooks/store/use-meeting";
+import { observer } from "mobx-react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "@plane/i18n";
-import { IMeeting, IUser } from "@plane/types/src/meeting";
-import { useMember } from "@/hooks/store";
-import useSWR from "swr";
-import { serializeMeetingForApi } from "@/services/meeting";
-import { observer } from "mobx-react";
+import { useMeeting } from "@/hooks/store/use-meeting";
 
 const MeetingViewForm = observer(() => {
   const { workspaceSlug, meetingId } = useParams();
@@ -23,10 +16,6 @@ const MeetingViewForm = observer(() => {
   if (!meetingData?.id) {
     router.push(`/${workspaceSlug}/meetings`);
   }
-
-  const {
-    workspace: { fetchWorkspaceMembers, fetchWorkspaceMemberInvitations },
-  } = useMember();
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-gray-900 text-white rounded-2xl shadow-xl space-y-6">

@@ -18,7 +18,7 @@ const MEETING_STATUSES = ["Scheduled", "Completed", "Cancelled"];
 
 export default function MeetingHeaderFilters({
   filterMenuButton,
-  isMobile,
+  // isMobile,
   classname = "",
   filterClassname = "",
 }: Props) {
