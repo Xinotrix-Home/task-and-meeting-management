@@ -1,13 +1,32 @@
 "use client";
 
-import MeetingCardList from "../_components/TaskCardList";
+import { observer } from "mobx-react";
+import Head from "next/head";
+// i18n
+import { useTranslation } from "@plane/i18n";
+// components
+import { PageHead } from "@/components/core";
+import { ProjectLayoutRoot } from "@/components/issues";
+// hooks
 
-export default function MeetingDashboard() {
+const ProjectIssuesPage = observer(() => {
+  // i18n
+  const { t } = useTranslation();
+  // store
+
   return (
     <>
-      <div className="mt-6">
-        <MeetingCardList />
+      <PageHead title={"Tasks"} />
+      <Head>
+        <title>
+          {"Tasks"} - {t("issue.label", { count: 2 })}
+        </title>
+      </Head>
+      <div className="h-full w-full">
+        <ProjectLayoutRoot />
       </div>
     </>
   );
-}
+});
+
+export default ProjectIssuesPage;

@@ -1,15 +1,14 @@
 "use client";
 
-import { ReactNode } from "react";
 // components
 import { AppHeader, ContentWrapper } from "@/components/core";
-// local components
-import { ProjectsListMobileHeader } from "@/plane-web/components/projects/mobile-header";
-import { TasksBaseHeader } from "../_components/TasksBaseHeader";
-export default function ProjectListLayout({ children }: { children: ReactNode }) {
+import { ProjectIssuesHeader } from "./header";
+import { ProjectIssuesMobileHeader } from "./mobile-header";
+
+export default function ProjectIssuesLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <AppHeader header={<TasksBaseHeader />} mobileHeader={<ProjectsListMobileHeader />} />
+      <AppHeader header={<ProjectIssuesHeader />} mobileHeader={<ProjectIssuesMobileHeader />} />
       <ContentWrapper>{children}</ContentWrapper>
     </>
   );
