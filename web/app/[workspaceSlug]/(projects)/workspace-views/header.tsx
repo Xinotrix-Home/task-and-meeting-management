@@ -19,6 +19,7 @@ import { CreateUpdateWorkspaceViewModal } from "@/components/workspace";
 import { isIssueFilterActive } from "@/helpers/filter.helper";
 // hooks
 import { useLabel, useMember, useIssues, useGlobalView } from "@/hooks/store";
+import { IssuesHeader } from "@/plane-web/components/issues";
 
 export const GlobalIssuesHeader = observer(() => {
   // states
@@ -36,9 +37,9 @@ export const GlobalIssuesHeader = observer(() => {
   } = useMember();
   const { t } = useTranslation();
 
-  const issueFilters = globalViewId ? filters[globalViewId.toString()] : undefined;
+  const issueFilters = globalViewId ? filters[globalViewId?.toString()] : undefined;
 
-  const viewDetails = getViewDetailsById(globalViewId.toString());
+  const viewDetails = getViewDetailsById(globalViewId?.toString());
 
   const handleFiltersUpdate = useCallback(
     (key: keyof IIssueFilterOptions, value: string | string[]) => {
@@ -61,7 +62,7 @@ export const GlobalIssuesHeader = observer(() => {
         undefined,
         EIssueFilterType.FILTERS,
         { [key]: newValues },
-        globalViewId.toString()
+        globalViewId?.toString()
       );
     },
     [workspaceSlug, issueFilters, updateFilters, globalViewId]
@@ -75,7 +76,7 @@ export const GlobalIssuesHeader = observer(() => {
         undefined,
         EIssueFilterType.DISPLAY_FILTERS,
         updatedDisplayFilter,
-        globalViewId.toString()
+        globalViewId?.toString()
       );
     },
     [workspaceSlug, updateFilters, globalViewId]
@@ -89,7 +90,7 @@ export const GlobalIssuesHeader = observer(() => {
         undefined,
         EIssueFilterType.DISPLAY_PROPERTIES,
         property,
-        globalViewId.toString()
+        globalViewId?.toString()
       );
     },
     [workspaceSlug, updateFilters, globalViewId]
@@ -99,7 +100,7 @@ export const GlobalIssuesHeader = observer(() => {
 
   return (
     <>
-      <CreateUpdateWorkspaceViewModal isOpen={createViewModal} onClose={() => setCreateViewModal(false)} />
+      {/* <CreateUpdateWorkspaceViewModal isOpen={createViewModal} onClose={() => setCreateViewModal(false)} />
       <Header>
         <Header.LeftItem>
           <Breadcrumbs>
@@ -146,7 +147,8 @@ export const GlobalIssuesHeader = observer(() => {
             {t("workspace_views.add_view")}
           </Button>
         </Header.RightItem>
-      </Header>
+      </Header> */}
+      <IssuesHeader />
     </>
   );
 });

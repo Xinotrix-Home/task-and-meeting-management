@@ -9,13 +9,23 @@ import {
   EIssueLayoutTypes,
   EIssueFilterType,
   EIssuesStoreType,
-  ISSUE_DISPLAY_FILTERS_BY_PAGE
-,EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
+  ISSUE_DISPLAY_FILTERS_BY_PAGE,
+  EUserPermissions,
+  EUserPermissionsLevel,
+} from "@plane/constants";
 import { IIssueDisplayFilterOptions } from "@plane/types";
 // hooks
 // components
 import { EmptyState } from "@/components/common";
-import { SpreadsheetView } from "@/components/issues/issue-layouts";
+import {
+  BaseGanttRoot,
+  CalendarLayout,
+  KanBanLayout,
+  ListLayout,
+  ProjectIssueLayout,
+  ProjectSpreadsheetLayout,
+  SpreadsheetView,
+} from "@/components/issues";
 import { AllIssueQuickActions } from "@/components/issues/issue-layouts/quick-action-dropdowns";
 import { SpreadsheetLayoutLoader } from "@/components/ui";
 // hooks
@@ -52,7 +62,7 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
   useWorkspaceIssueProperties(workspaceSlug);
   // store
   const {
-    issuesFilter: { filters, fetchFilters, updateFilters },
+    issuesFilter: { filters, fetchFilters, updateFilters, getIssueFilters },
     issues: { clear, getIssueLoader, getPaginationData, groupedIssueIds, fetchIssues, fetchNextIssues },
   } = useIssues(EIssuesStoreType.GLOBAL);
   const { updateIssue, removeIssue, archiveIssue } = useIssuesActions(EIssuesStoreType.GLOBAL);
@@ -192,12 +202,14 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
     return <SpreadsheetLayoutLoader />;
   }
 
+  const activeLayout = issueFilters?.displayFilters?.layout;
+
   const issueIds = groupedIssueIds[ALL_ISSUES];
   const nextPageResults = getPaginationData(ALL_ISSUES, undefined)?.nextPageResults;
 
   return (
     <IssuesStoreContext.Provider value={EIssuesStoreType.GLOBAL}>
-      <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
+      {/* <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
         <SpreadsheetView
           displayProperties={issueFilters?.displayProperties ?? {}}
           displayFilters={issueFilters?.displayFilters ?? {}}
@@ -210,9 +222,9 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
           loadMoreIssues={fetchNextPages}
           isWorkspaceLevel
         />
-        {/* peek overview */}
-        <IssuePeekOverview />
-      </IssueLayoutHOC>
+       <IssuePeekOverview />
+      </IssueLayoutHOC> */}
+      <ProjectIssueLayout activeLayout={activeLayout} />
     </IssuesStoreContext.Provider>
   );
 });

@@ -22,7 +22,7 @@ import {
 import { useIssues } from "@/hooks/store";
 import { IssuesStoreContext } from "@/hooks/use-issue-layout-store";
 
-const ProjectIssueLayout = (props: { activeLayout: EIssueLayoutTypes | undefined }) => {
+export const ProjectIssueLayout = (props: { activeLayout: EIssueLayoutTypes | undefined }) => {
   switch (props.activeLayout) {
     case EIssueLayoutTypes.LIST:
       return <ListLayout />;
