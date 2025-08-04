@@ -16,12 +16,14 @@ import {
 import { IIssueDisplayFilterOptions } from "@plane/types";
 // hooks
 // components
+import { Spinner } from "@plane/ui";
 import { EmptyState } from "@/components/common";
 import {
   BaseGanttRoot,
   CalendarLayout,
   KanBanLayout,
   ListLayout,
+  ProjectAppliedFiltersRoot,
   ProjectIssueLayout,
   ProjectSpreadsheetLayout,
   SpreadsheetView,
@@ -202,7 +204,8 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
     return <SpreadsheetLayoutLoader />;
   }
 
-  const activeLayout = issueFilters?.displayFilters?.layout;
+  const activeLayout = EIssueLayoutTypes?.SPREADSHEET; //  issueFilters?.displayFilters?.layout;
+  // console.log("issues_layout", filters, filters?.[globalViewId.toString()], issueFilters, activeLayout);
 
   const issueIds = groupedIssueIds[ALL_ISSUES];
   const nextPageResults = getPaginationData(ALL_ISSUES, undefined)?.nextPageResults;
@@ -225,6 +228,21 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
        <IssuePeekOverview />
       </IssueLayoutHOC> */}
       <ProjectIssueLayout activeLayout={activeLayout} />
+
+      {/* <div className="relative flex h-full w-full flex-col overflow-hidden">
+        <ProjectAppliedFiltersRoot />
+        <div className="relative h-full w-full overflow-auto bg-custom-background-90">
+
+          {getIssueLoader() === "mutation" && (
+            <div className="fixed w-[40px] h-[40px] z-50 right-[20px] top-[70px] flex justify-center items-center bg-custom-background-80 shadow-sm rounded">
+              <Spinner className="w-4 h-4" />
+            </div>
+          )}
+          <ProjectIssueLayout activeLayout={activeLayout} />
+        </div>
+
+        <IssuePeekOverview />
+      </div> */}
     </IssuesStoreContext.Provider>
   );
 });

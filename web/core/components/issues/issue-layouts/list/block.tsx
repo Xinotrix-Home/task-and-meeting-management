@@ -147,7 +147,6 @@ export const IssueBlock = observer((props: IssueBlockProps) => {
       });
     }
   };
-
   //TODO: add better logic. This is to have a min width for ID/Key based on the length of project identifier
   const keyMinWidth = displayProperties?.key ? (projectIdentifier?.length ?? 0) * 7 : 0;
 
