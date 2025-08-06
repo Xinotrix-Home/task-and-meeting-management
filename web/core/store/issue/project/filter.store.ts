@@ -206,10 +206,10 @@ export class ProjectIssuesFilter extends IssueFilterHelperStore implements IProj
             updatedDisplayFilters.sub_group_by = null;
           }
           // set group_by to state if layout is switched to kanban and group_by is null
-          if (_filters.displayFilters.layout === "kanban" && _filters.displayFilters.group_by === null) {
-            _filters.displayFilters.group_by = "state";
-            updatedDisplayFilters.group_by = "state";
-          }
+          // if (_filters.displayFilters.layout === "kanban" && _filters.displayFilters.group_by === null) {
+          //   _filters.displayFilters.group_by = "state";
+          //   updatedDisplayFilters.group_by = "state";
+          // }
 
           runInAction(() => {
             Object.keys(updatedDisplayFilters).forEach((_key) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { FC, Fragment } from "react";
+import { toJS } from "mobx";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -24,16 +25,16 @@ import { IssuesStoreContext } from "@/hooks/use-issue-layout-store";
 
 export const ProjectIssueLayout = (props: { activeLayout: EIssueLayoutTypes | undefined }) => {
   switch (props.activeLayout) {
-    case EIssueLayoutTypes.LIST:
-      return <ListLayout />;
+    // case EIssueLayoutTypes.LIST:
+    //   return <ListLayout />;
     case EIssueLayoutTypes.KANBAN:
-      return <KanBanLayout />;
-    case EIssueLayoutTypes.CALENDAR:
-      return <CalendarLayout />;
-    case EIssueLayoutTypes.GANTT:
-      return <BaseGanttRoot />;
+      return <KanBanLayout />; // Board layout
+    // case EIssueLayoutTypes.CALENDAR:
+    // return <CalendarLayout />;
+    // case EIssueLayoutTypes.GANTT:
+    //   return <BaseGanttRoot />; // Timeline layout
     case EIssueLayoutTypes.SPREADSHEET:
-      return <ProjectSpreadsheetLayout />;
+      return <ProjectSpreadsheetLayout />; // Table layout
     default:
       return null;
   }
@@ -44,6 +45,7 @@ export const ProjectLayoutRoot: FC = observer(() => {
   const { workspaceSlug, projectId } = useParams();
   // hooks
   const { issues, issuesFilter } = useIssues(EIssuesStoreType.PROJECT);
+  // console.log("data_issue", toJS(issues), toJS(issuesFilter));
 
   const { isLoading } = useSWR(
     workspaceSlug && projectId ? `PROJECT_ISSUES_${workspaceSlug}_${projectId}` : null,
@@ -56,7 +58,8 @@ export const ProjectLayoutRoot: FC = observer(() => {
   );
 
   const issueFilters = issuesFilter?.getIssueFilters(projectId?.toString());
-  const activeLayout = issueFilters?.displayFilters?.layout;
+  // const activeLayout = issueFilters?.displayFilters?.layout;
+  const activeLayout = EIssueLayoutTypes?.SPREADSHEET;
 
   if (!workspaceSlug || !projectId) return <></>;
 
@@ -82,7 +85,7 @@ export const ProjectLayoutRoot: FC = observer(() => {
         </div>
 
         {/* peek overview */}
-        <IssuePeekOverview />
+        {/* <IssuePeekOverview /> */}
       </div>
     </IssuesStoreContext.Provider>
   );

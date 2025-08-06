@@ -105,11 +105,11 @@ const HeaderFilters = observer((props: Props) => {
       />
       <LayoutSelection
         layouts={[
-          EIssueLayoutTypes.LIST,
+          // EIssueLayoutTypes.LIST,
           EIssueLayoutTypes.KANBAN,
-          EIssueLayoutTypes.CALENDAR,
+          // EIssueLayoutTypes.CALENDAR,
           EIssueLayoutTypes.SPREADSHEET,
-          EIssueLayoutTypes.GANTT,
+          // EIssueLayoutTypes.GANTT,
         ]}
         onChange={(layout) => handleLayoutChange(layout)}
         selectedLayout={activeLayout}

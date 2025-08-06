@@ -1,11 +1,12 @@
 import { TIssue } from "./issues/issue";
 
-export type TIssueLayouts = "list" | "kanban" | "calendar" | "spreadsheet" | "gantt_chart";
+export type TIssueLayouts = "spreadsheet" | "kanban";
+// export type TIssueLayouts = "list" | "kanban" | "calendar" | "spreadsheet" | "gantt_chart";
 
 export type TIssueGroupByOptions =
-  | "state"
+  // | "state"
   | "priority"
-  | "labels"
+  // | "labels"
   | "created_by"
   | "state_detail.group"
   | "project"
@@ -54,12 +55,12 @@ export type TIssueExtraOptions = "show_empty_groups" | "sub_issue";
 export type TIssueParams =
   | "priority"
   | "state_group"
-  | "state"
+  // | "state"
   | "assignees"
   | "mentions"
   | "created_by"
   | "subscriber"
-  | "labels"
+  // | "labels"
   | "cycle"
   | "module"
   | "start_date"
