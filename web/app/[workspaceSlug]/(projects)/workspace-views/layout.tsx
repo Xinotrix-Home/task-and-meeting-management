@@ -9,10 +9,9 @@ export default function GlobalIssuesLayout({ children }: { children: React.React
   return (
     <>
       <AppHeader
-        header={<ProjectIssuesHeader />}
-        mobileHeader={<ProjectIssuesMobileHeader />}
-
-        // header={<GlobalIssuesHeader />}
+        // header={<ProjectIssuesHeader />}
+        // mobileHeader={<ProjectIssuesMobileHeader />}
+        header={<GlobalIssuesHeader />}
       />
       <ContentWrapper>{children}</ContentWrapper>
     </>

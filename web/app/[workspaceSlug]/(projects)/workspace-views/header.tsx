@@ -100,7 +100,7 @@ export const GlobalIssuesHeader = observer(() => {
 
   return (
     <>
-      {/* <CreateUpdateWorkspaceViewModal isOpen={createViewModal} onClose={() => setCreateViewModal(false)} />
+      <CreateUpdateWorkspaceViewModal isOpen={createViewModal} onClose={() => setCreateViewModal(false)} />
       <Header>
         <Header.LeftItem>
           <Breadcrumbs>
@@ -147,8 +147,8 @@ export const GlobalIssuesHeader = observer(() => {
             {t("workspace_views.add_view")}
           </Button>
         </Header.RightItem>
-      </Header> */}
-      <IssuesHeader />
+      </Header>
+      {/* <IssuesHeader /> */}
     </>
   );
 });
