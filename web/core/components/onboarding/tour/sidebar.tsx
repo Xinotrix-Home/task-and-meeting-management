@@ -13,7 +13,7 @@ const sidebarOptions: {
 }[] = [
   {
     key: "work-items",
-    label: "Work items",
+    label: "Tasks",
     Icon: LayersIcon,
   },
   {

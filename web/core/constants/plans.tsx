@@ -69,7 +69,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
     features: [
       {
         title: "Projects",
-        description: "Add projects to house work items, cycles, and modules.",
+        description: "Add projects to house tasks, cycles, and modules.",
         cloud: {
           free: true,
           one: true,
@@ -79,8 +79,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
         },
       },
       {
-        title: "Work items",
-        description: "Add work via work items, set properties for tracking, and add to\ncycles or modules.",
+        title: "Tasks",
+        description: "Add work via tasks, set properties for tracking, and add to\ncycles or modules.",
         cloud: {
           free: true,
           one: true,
@@ -91,7 +91,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Comments",
-        description: "Respond to work items, @mention members, and brainstorm\ntogether without leaving Plane.",
+        description: "Respond to tasks, @mention members, and brainstorm\ntogether without leaving Plane.",
         cloud: {
           free: true,
           one: true,
@@ -153,7 +153,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
     features: [
       {
         title: "Bulk Ops",
-        description: "Add several work items to cycles or modules, transfer\nthem, or edit their properties.",
+        description: "Add several tasks to cycles or modules, transfer\nthem, or edit their properties.",
         cloud: {
           free: false,
           one: "Limited props",
@@ -218,7 +218,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Dependencies in Gantt",
-        description: "Adjust timelines for dependent work items visually on\nour Gantt layout.",
+        description: "Adjust timelines for dependent tasks visually on\nour Gantt layout.",
         cloud: {
           free: false,
           one: false,
@@ -239,9 +239,9 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
         },
       },
       {
-        title: "Auto-transfer Cycle Work items",
+        title: "Auto-transfer Cycle Tasks",
         description:
-          "Transfer incomplete work items from a completed cycle\nto the next cycle or to the default project state. ",
+          "Transfer incomplete tasks from a completed cycle\nto the next cycle or to the default project state. ",
         cloud: {
           free: false,
           one: false,
@@ -252,7 +252,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Epics",
-        description: "Organize long-term work in epics that house work items,\ncycles, and modules.",
+        description: "Organize long-term work in epics that house tasks,\ncycles, and modules.",
         cloud: {
           free: false,
           one: false,
@@ -299,7 +299,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Auto-assignment In Modules",
-        description: "Choose assignment rules for work items in a\nmodule including Linear, Round Robin, or Capacity.",
+        description: "Choose assignment rules for tasks in a\nmodule including Linear, Round Robin, or Capacity.",
         cloud: {
           free: false,
           one: false,
@@ -416,7 +416,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Intake Assignees",
-        description: "Assign approved Intake work items to a member by\ndefault.",
+        description: "Assign approved Intake tasks to a member by\ndefault.",
         cloud: {
           free: false,
           one: false,
@@ -427,7 +427,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Custom SLAs",
-        description: "Set SLA matrices for time-sensitive work items.",
+        description: "Set SLA matrices for time-sensitive tasks.",
         cloud: {
           free: false,
           one: false,
@@ -438,7 +438,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Intake Forms",
-        description: "Take Intake work items from externally accessible web\nforms.",
+        description: "Take Intake tasks from externally accessible web\nforms.",
         cloud: {
           free: false,
           one: false,
@@ -449,7 +449,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Emails For Intake",
-        description: "Get an email address for reporting work items\ndirectly into a project's Intake.",
+        description: "Get an email address for reporting tasks\ndirectly into a project's Intake.",
         comingSoon: true,
         cloud: {
           free: false,
@@ -468,7 +468,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       {
         title: "Layouts",
         description:
-          "Choose from the List, the Board, the Calendar, the\nGantt, or the Spreadsheet layout for your work items.",
+          "Choose from the List, the Board, the Calendar, the\nGantt, or the Spreadsheet layout for your tasks.",
         cloud: {
           free: true,
           one: true,
@@ -697,7 +697,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Guests",
-        description: "Let some users see everything or just their work items in\na project.",
+        description: "Let some users see everything or just their tasks in\na project.",
         cloud: {
           free: false,
           one: "5 per paid member",
@@ -822,7 +822,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Work item Embeds",
-        description: "Embed work items from any project you are a member\nof.",
+        description: "Embed tasks from any project you are a member\nof.",
         cloud: {
           free: false,
           one: true,
@@ -832,8 +832,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
         },
       },
       {
-        title: "Link-to-work items",
-        description: "Link pages in work items in a separate section in work item\ndetails.",
+        title: "Link-to-tasks",
+        description: "Link pages in tasks in a separate section in work item\ndetails.",
         cloud: {
           free: false,
           one: true,
@@ -931,7 +931,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
     features: [
       {
         title: "Jira",
-        description: "Import your work items and members from Jira.",
+        description: "Import your tasks and members from Jira.",
         cloud: {
           free: "Without custom props",
           one: "Without custom props",
@@ -942,7 +942,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "GitHub",
-        description: "Import your work items and members from GitHub.",
+        description: "Import your tasks and members from GitHub.",
         cloud: {
           free: "Without custom props",
           one: "Without custom props",
@@ -961,7 +961,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       {
         title: "GitHub",
         description:
-          "Sync Plane work items and states to GitHub work items and\nstates. Update GitHub automatically with activity\nfrom Plane and vice-versa.",
+          "Sync Plane tasks and states to GitHub tasks and\nstates. Update GitHub automatically with activity\nfrom Plane and vice-versa.",
         cloud: {
           free: false,
           one: false,
@@ -994,7 +994,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Zendesk",
-        description: "Create Plane work items from Zendesk tickets.",
+        description: "Create Plane tasks from Zendesk tickets.",
         cloud: {
           free: false,
           one: false,
@@ -1005,7 +1005,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Freshdesk",
-        description: "Create Plane work items from Freshdesk tickets.",
+        description: "Create Plane tasks from Freshdesk tickets.",
         cloud: {
           free: false,
           one: false,
@@ -1296,7 +1296,7 @@ export const PLANE_PLANS: PlanePlans = {
   planHighlights: {
     free: ["Upto 12 users", "Pages", "Unlimited projects", "Unlimited cycles and modules"],
     one: ["Upto 50 users", "OIDC and SAML", "Active cycles", "Limited time tracking"],
-    pro: ["Unlimited users", "Custom work items + Properties", "Work item templates", "Full Time Tracking"],
+    pro: ["Unlimited users", "Custom tasks + Properties", "Work item templates", "Full Time Tracking"],
     business: ["RBAC", "Project Templates", "Baselines And Deviations", "Custom Reports"],
     enterprise: ["Private + managed deployments", "GAC", "LDAP support", "Databases + Formulas"],
   },

@@ -186,11 +186,11 @@ export const ModuleCardItem: React.FC<Props> = observer((props) => {
 
   const issueCount = module
     ? !moduleTotalIssues || moduleTotalIssues === 0
-      ? `0 work items`
+      ? `0 tasks`
       : moduleTotalIssues === moduleCompletedIssues
         ? `${moduleTotalIssues} Work item${moduleTotalIssues > 1 ? `s` : ``}`
-        : `${moduleCompletedIssues}/${moduleTotalIssues} Work items`
-    : `0 work items`;
+        : `${moduleCompletedIssues}/${moduleTotalIssues} Tasks`
+    : `0 tasks`;
 
   const moduleLeadDetails = moduleDetails.lead_id ? getUserDetails(moduleDetails.lead_id) : undefined;
 

@@ -42,9 +42,7 @@ export const IssueLink: FC<TIssueLink> = (props) => {
         rel={activity.issue === null ? "" : "noopener noreferrer"}
         className="inline-flex items-center gap-1 font-medium text-custom-text-100 hover:underline"
       >
-        {activity.issue_detail
-          ? `${activity.project_detail.identifier}-${activity.issue_detail.sequence_id}`
-          : "Work items"}{" "}
+        {activity.issue_detail ? `${activity.project_detail.identifier}-${activity.issue_detail.sequence_id}` : "Tasks"}{" "}
         <span className="font-normal">{activity.issue_detail?.name}</span>
       </a>
     </Tooltip>

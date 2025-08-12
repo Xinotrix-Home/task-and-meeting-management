@@ -260,7 +260,7 @@ export class Storage {
     if (syncedAt) {
       await syncDeletesToLocal(this.workspaceSlug, projectId, { updated_at__gt: syncedAt });
     }
-    log("### Time taken to add work items", performance.now() - start);
+    log("### Time taken to add tasks", performance.now() - start);
 
     if (status === "loading") {
       await createIndexes();
@@ -336,7 +336,7 @@ export class Storage {
     try {
       [issuesRaw, count] = await Promise.all([runQuery(query), runQuery(countQuery)]);
     } catch (e) {
-      log("Unable to get work items from local db, falling back to server");
+      log("Unable to get tasks from local db, falling back to server");
       logError(e);
       const issueService = new IssueService();
       return await issueService.getIssuesFromServer(workspaceSlug, projectId, queries, config);

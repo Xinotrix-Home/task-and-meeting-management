@@ -70,7 +70,7 @@ export const IssuesHeader = observer(() => {
           {issuesCount && issuesCount > 0 ? (
             <Tooltip
               isMobile={isMobile}
-              tooltipContent={`There are ${issuesCount} ${issuesCount > 1 ? "work items" : "work item"} in this project`}
+              tooltipContent={`There are ${issuesCount} ${issuesCount > 1 ? "tasks" : "work item"} in this project`}
               position="bottom"
             >
               <CountChip count={issuesCount} />
@@ -104,7 +104,7 @@ export const IssuesHeader = observer(() => {
         {canUserCreateIssue ? (
           <Button
             onClick={() => {
-              setTrackElement("Project work items page");
+              setTrackElement("Project tasks page");
               toggleCreateIssueModal(true, EIssuesStoreType.PROJECT);
             }}
             size="sm"

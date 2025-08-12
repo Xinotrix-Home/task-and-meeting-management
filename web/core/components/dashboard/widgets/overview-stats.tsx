@@ -30,25 +30,25 @@ export const OverviewStatsWidget: React.FC<WidgetProps> = observer((props) => {
   const STATS_LIST = [
     {
       key: "assigned",
-      title: "Work items assigned",
+      title: "Tasks assigned",
       count: widgetStats?.assigned_issues_count,
       link: `/${workspaceSlug}/workspace-views/assigned`,
     },
     {
       key: "overdue",
-      title: "Work items overdue",
+      title: "Tasks overdue",
       count: widgetStats?.pending_issues_count,
       link: `/${workspaceSlug}/workspace-views/assigned/?state_group=backlog,unstarted,started&target_date=${today};before`,
     },
     {
       key: "created",
-      title: "Work items created",
+      title: "Tasks created",
       count: widgetStats?.created_issues_count,
       link: `/${workspaceSlug}/workspace-views/created`,
     },
     {
       key: "completed",
-      title: "Work items completed",
+      title: "Tasks completed",
       count: widgetStats?.completed_issues_count,
       link: `/${workspaceSlug}/workspace-views/assigned?state_group=completed`,
     },
