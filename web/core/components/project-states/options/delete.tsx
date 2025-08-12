@@ -67,7 +67,7 @@ export const StateDelete: FC<TStateDelete> = observer((props) => {
           type: TOAST_TYPE.ERROR,
           title: "Error!",
           message:
-            "This state contains some work items within it, please move them to some other state to delete this state.",
+            "This state contains some tasks within it, please move them to some other state to delete this state.",
         });
       } else {
         setToast({

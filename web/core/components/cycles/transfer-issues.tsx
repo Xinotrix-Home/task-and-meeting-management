@@ -27,7 +27,7 @@ export const TransferIssues: React.FC<Props> = (props) => {
             onClick={handleClick}
             disabled={disabled}
           >
-            Transfer work items
+            Transfer tasks
           </Button>
         </div>
       )}

@@ -38,9 +38,9 @@ const TOUR_STEPS: {
 }[] = [
   {
     key: "work-items",
-    title: "Plan with work items",
+    title: "Plan with tasks",
     description:
-      "The work item is the building block of the Plane. Most concepts in Plane are either associated with work items and their properties.",
+      "The work item is the building block of the Plane. Most concepts in Plane are either associated with tasks and their properties.",
     image: IssuesTour,
     nextStep: "cycles",
   },
@@ -65,7 +65,7 @@ const TOUR_STEPS: {
     key: "views",
     title: "Views",
     description:
-      "Create custom filters to display only the work items that matter to you. Save and share your filters in just a few clicks.",
+      "Create custom filters to display only the tasks that matter to you. Save and share your filters in just a few clicks.",
     image: ViewsTour,
     prevStep: "modules",
     nextStep: "pages",
@@ -73,7 +73,7 @@ const TOUR_STEPS: {
   {
     key: "pages",
     title: "Document with pages",
-    description: "Use Pages to quickly jot down work items when you're in a meeting or starting a day.",
+    description: "Use Pages to quickly jot down tasks when you're in a meeting or starting a day.",
     image: PagesTour,
     prevStep: "views",
   },

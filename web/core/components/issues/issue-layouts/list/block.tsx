@@ -201,7 +201,7 @@ export const IssueBlock = observer((props: IssueBlockProps) => {
                 <Tooltip
                   tooltipContent={
                     <>
-                      Only work items within the current
+                      Only tasks within the current
                       <br />
                       project can be selected.
                     </>

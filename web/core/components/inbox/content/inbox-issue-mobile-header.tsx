@@ -159,7 +159,7 @@ export const InboxIssueActionsMobileHeader: React.FC<Props> = observer((props) =
                   handleActionWithPermission(
                     isProjectAdmin,
                     handleIssueSnoozeAction,
-                    "Only project admins can snooze/Un-snooze work items"
+                    "Only project admins can snooze/Un-snooze tasks"
                   )
                 }
               >
@@ -175,7 +175,7 @@ export const InboxIssueActionsMobileHeader: React.FC<Props> = observer((props) =
                   handleActionWithPermission(
                     isProjectAdmin,
                     () => setSelectDuplicateIssue(true),
-                    "Only project admins can mark work items as duplicate"
+                    "Only project admins can mark tasks as duplicate"
                   )
                 }
               >
@@ -191,7 +191,7 @@ export const InboxIssueActionsMobileHeader: React.FC<Props> = observer((props) =
                   handleActionWithPermission(
                     isProjectAdmin,
                     () => setAcceptIssueModal(true),
-                    "Only project admins can accept work items"
+                    "Only project admins can accept tasks"
                   )
                 }
               >
@@ -207,7 +207,7 @@ export const InboxIssueActionsMobileHeader: React.FC<Props> = observer((props) =
                   handleActionWithPermission(
                     isProjectAdmin,
                     () => setDeclineIssueModal(true),
-                    "Only project admins can deny work items"
+                    "Only project admins can deny tasks"
                   )
                 }
               >
