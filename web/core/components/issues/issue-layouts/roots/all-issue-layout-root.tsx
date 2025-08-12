@@ -193,7 +193,7 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
         title="View does not exist"
         description="The view you are looking for does not exist or you don't have permission to view it."
         primaryButton={{
-          text: "Go to All work items",
+          text: "Go to All tasks",
           onClick: () => router.push(`/${workspaceSlug}/workspace-views/all-issues`),
         }}
       />
@@ -225,14 +225,13 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
           loadMoreIssues={fetchNextPages}
           isWorkspaceLevel
         />
-       <IssuePeekOverview />
+        <IssuePeekOverview />
       </IssueLayoutHOC> */}
-      <ProjectIssueLayout activeLayout={activeLayout} />
+      {/* <ProjectIssueLayout activeLayout={activeLayout} /> */}
 
-      {/* <div className="relative flex h-full w-full flex-col overflow-hidden">
+      <div className="relative flex h-full w-full flex-col overflow-hidden">
         <ProjectAppliedFiltersRoot />
         <div className="relative h-full w-full overflow-auto bg-custom-background-90">
-
           {getIssueLoader() === "mutation" && (
             <div className="fixed w-[40px] h-[40px] z-50 right-[20px] top-[70px] flex justify-center items-center bg-custom-background-80 shadow-sm rounded">
               <Spinner className="w-4 h-4" />
@@ -242,7 +241,7 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
         </div>
 
         <IssuePeekOverview />
-      </div> */}
+      </div>
     </IssuesStoreContext.Provider>
   );
 });

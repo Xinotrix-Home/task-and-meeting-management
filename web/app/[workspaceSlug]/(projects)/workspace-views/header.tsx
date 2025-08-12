@@ -106,7 +106,7 @@ export const GlobalIssuesHeader = observer(() => {
           <Breadcrumbs>
             <Breadcrumbs.BreadcrumbItem
               type="text"
-              link={<BreadcrumbLink label={t("views")} icon={<Layers className="h-4 w-4 text-custom-text-300" />} />}
+              link={<BreadcrumbLink label={t("Tasks")} icon={<Layers className="h-4 w-4 text-custom-text-300" />} />}
             />
           </Breadcrumbs>
         </Header.LeftItem>
@@ -143,9 +143,9 @@ export const GlobalIssuesHeader = observer(() => {
             <></>
           )}
 
-          <Button variant="primary" size="sm" onClick={() => setCreateViewModal(true)}>
+          {/* <Button variant="primary" size="sm" onClick={() => setCreateViewModal(true)}>
             {t("workspace_views.add_view")}
-          </Button>
+          </Button> */}
         </Header.RightItem>
       </Header>
       {/* <IssuesHeader /> */}
