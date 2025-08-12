@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { Layers } from "lucide-react";
 // plane constants
-import { EIssueFilterType, EIssuesStoreType, ISSUE_DISPLAY_FILTERS_BY_PAGE } from "@plane/constants";
+import { EIssueFilterType, EIssueLayoutTypes, EIssuesStoreType, ISSUE_DISPLAY_FILTERS_BY_PAGE } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 // types
 import { IIssueDisplayFilterOptions, IIssueDisplayProperties, IIssueFilterOptions } from "@plane/types";
@@ -13,7 +13,7 @@ import { IIssueDisplayFilterOptions, IIssueDisplayProperties, IIssueFilterOption
 import { Breadcrumbs, Button, Header } from "@plane/ui";
 // components
 import { BreadcrumbLink } from "@/components/common";
-import { DisplayFiltersSelection, FiltersDropdown, FilterSelection } from "@/components/issues";
+import { DisplayFiltersSelection, FiltersDropdown, FilterSelection, LayoutSelection } from "@/components/issues";
 import { CreateUpdateWorkspaceViewModal } from "@/components/workspace";
 // helpers
 import { isIssueFilterActive } from "@/helpers/filter.helper";
@@ -40,6 +40,8 @@ export const GlobalIssuesHeader = observer(() => {
   const issueFilters = globalViewId ? filters[globalViewId?.toString()] : undefined;
 
   const viewDetails = getViewDetailsById(globalViewId?.toString());
+
+  const activeLayout = issueFilters?.displayFilters?.layout;
 
   const handleFiltersUpdate = useCallback(
     (key: keyof IIssueFilterOptions, value: string | string[]) => {
@@ -96,6 +98,20 @@ export const GlobalIssuesHeader = observer(() => {
     [workspaceSlug, updateFilters, globalViewId]
   );
 
+  // const handleLayoutChange = useCallback(
+  //   (layout: EIssueLayoutTypes) => {
+  //     if (!workspaceSlug) return;
+  //     updateFilters(
+  //       workspaceSlug.toString(),
+  //       undefined,
+  //       EIssueFilterType.DISPLAY_PROPERTIES,
+  //     layout,
+  //       globalViewId?.toString(),
+  //     );
+  //   },
+  //   [workspaceSlug, updateFilters]
+  // );
+
   const isLocked = viewDetails?.is_locked;
 
   return (
@@ -106,7 +122,9 @@ export const GlobalIssuesHeader = observer(() => {
           <Breadcrumbs>
             <Breadcrumbs.BreadcrumbItem
               type="text"
-              link={<BreadcrumbLink label={t("Tasks")} icon={<Layers className="h-4 w-4 text-custom-text-300" />} />}
+              link={
+                <BreadcrumbLink label={t("All Tasks")} icon={<Layers className="h-4 w-4 text-custom-text-300" />} />
+              }
             />
           </Breadcrumbs>
         </Header.LeftItem>
@@ -114,6 +132,19 @@ export const GlobalIssuesHeader = observer(() => {
         <Header.RightItem>
           {!isLocked ? (
             <>
+              <LayoutSelection
+                layouts={[
+                  // EIssueLayoutTypes.LIST,
+                  EIssueLayoutTypes.KANBAN,
+                  // EIssueLayoutTypes.CALENDAR,
+                  EIssueLayoutTypes.SPREADSHEET,
+                  // EIssueLayoutTypes.GANTT,
+                ]}
+                onChange={(layout) => {
+                  // handleLayoutChange(layout)
+                }}
+                selectedLayout={activeLayout}
+              />
               <FiltersDropdown
                 title={t("common.filters")}
                 placement="bottom-end"
