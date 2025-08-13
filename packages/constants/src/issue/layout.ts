@@ -27,20 +27,20 @@ export const SITES_ISSUE_LAYOUTS: {
   titleTranslationKey: string;
   icon: any;
 }[] = [
-  {
-    key: "list",
-    icon: "List",
-    titleTranslationKey: "issue.layouts.list",
-  },
-  {
-    key: "kanban",
-    icon: "Kanban",
-    titleTranslationKey: "issue.layouts.kanban",
-  },
-  // { key: "calendar", title: "Calendar", icon: Calendar },
-  // { key: "spreadsheet", title: "Spreadsheet", icon: Sheet },
-  // { key: "gantt", title: "Gantt chart", icon: GanttChartSquare },
-];
+    {
+      key: "list",
+      icon: "List",
+      titleTranslationKey: "issue.layouts.list",
+    },
+    {
+      key: "kanban",
+      icon: "Kanban",
+      titleTranslationKey: "issue.layouts.kanban",
+    },
+    // { key: "calendar", title: "Calendar", icon: Calendar },
+    // { key: "spreadsheet", title: "Spreadsheet", icon: Sheet },
+    // { key: "gantt", title: "Gantt chart", icon: GanttChartSquare },
+  ];
 
 export const ISSUE_LAYOUT_MAP: TIssueLayoutMap = {
   [EIssueLayoutTypes.LIST]: {

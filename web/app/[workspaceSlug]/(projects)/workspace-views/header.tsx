@@ -98,19 +98,19 @@ export const GlobalIssuesHeader = observer(() => {
     [workspaceSlug, updateFilters, globalViewId]
   );
 
-  // const handleLayoutChange = useCallback(
-  //   (layout: EIssueLayoutTypes) => {
-  //     if (!workspaceSlug) return;
-  //     updateFilters(
-  //       workspaceSlug.toString(),
-  //       undefined,
-  //       EIssueFilterType.DISPLAY_PROPERTIES,
-  //     layout,
-  //       globalViewId?.toString(),
-  //     );
-  //   },
-  //   [workspaceSlug, updateFilters]
-  // );
+  const handleLayoutChange = useCallback(
+    (layout: EIssueLayoutTypes) => {
+      if (!workspaceSlug) return;
+      updateFilters(
+        workspaceSlug.toString(),
+        undefined,
+        EIssueFilterType.DISPLAY_FILTERS,
+        { layout: layout },
+        globalViewId?.toString()
+      );
+    },
+    [workspaceSlug, globalViewId, updateFilters]
+  );
 
   const isLocked = viewDetails?.is_locked;
 
@@ -134,14 +134,14 @@ export const GlobalIssuesHeader = observer(() => {
             <>
               <LayoutSelection
                 layouts={[
-                  // EIssueLayoutTypes.LIST,
+                  EIssueLayoutTypes.LIST,
                   EIssueLayoutTypes.KANBAN,
-                  // EIssueLayoutTypes.CALENDAR,
+                  EIssueLayoutTypes.CALENDAR,
                   EIssueLayoutTypes.SPREADSHEET,
-                  // EIssueLayoutTypes.GANTT,
+                  EIssueLayoutTypes.GANTT,
                 ]}
                 onChange={(layout) => {
-                  // handleLayoutChange(layout)
+                  handleLayoutChange(layout);
                 }}
                 selectedLayout={activeLayout}
               />
@@ -179,7 +179,6 @@ export const GlobalIssuesHeader = observer(() => {
           </Button> */}
         </Header.RightItem>
       </Header>
-      {/* <IssuesHeader /> */}
     </>
   );
 });

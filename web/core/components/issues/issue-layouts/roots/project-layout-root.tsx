@@ -25,14 +25,14 @@ import { IssuesStoreContext } from "@/hooks/use-issue-layout-store";
 
 export const ProjectIssueLayout = (props: { activeLayout: EIssueLayoutTypes | undefined }) => {
   switch (props.activeLayout) {
-    // case EIssueLayoutTypes.LIST:
-    //   return <ListLayout />;
+    case EIssueLayoutTypes.LIST:
+      return <ListLayout />;
     case EIssueLayoutTypes.KANBAN:
       return <KanBanLayout />; // Board layout
-    // case EIssueLayoutTypes.CALENDAR:
-    // return <CalendarLayout />;
-    // case EIssueLayoutTypes.GANTT:
-    //   return <BaseGanttRoot />; // Timeline layout
+    case EIssueLayoutTypes.CALENDAR:
+      return <CalendarLayout />;
+    case EIssueLayoutTypes.GANTT:
+      return <BaseGanttRoot />; // Timeline layout
     case EIssueLayoutTypes.SPREADSHEET:
       return <ProjectSpreadsheetLayout />; // Table layout
     default:
@@ -58,8 +58,8 @@ export const ProjectLayoutRoot: FC = observer(() => {
   );
 
   const issueFilters = issuesFilter?.getIssueFilters(projectId?.toString());
-  // const activeLayout = issueFilters?.displayFilters?.layout;
-  const activeLayout = EIssueLayoutTypes?.SPREADSHEET;
+  const activeLayout = issueFilters?.displayFilters?.layout;
+  // const activeLayout = EIssueLayoutTypes?.SPREADSHEET;
 
   if (!workspaceSlug || !projectId) return <></>;
 
@@ -85,7 +85,7 @@ export const ProjectLayoutRoot: FC = observer(() => {
         </div>
 
         {/* peek overview */}
-        {/* <IssuePeekOverview /> */}
+        <IssuePeekOverview />
       </div>
     </IssuesStoreContext.Provider>
   );

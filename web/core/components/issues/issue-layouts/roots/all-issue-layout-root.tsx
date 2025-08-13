@@ -204,15 +204,16 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
     return <SpreadsheetLayoutLoader />;
   }
 
-  const activeLayout = EIssueLayoutTypes?.SPREADSHEET; //  issueFilters?.displayFilters?.layout;
-  // console.log("issues_layout", filters, filters?.[globalViewId.toString()], issueFilters, activeLayout);
+  const activeLayout = issueFilters?.displayFilters?.layout;
+  // const activeLayout = EIssueLayoutTypes?.SPREADSHEET; //  issueFilters?.displayFilters?.layout;
+  // console.log("issues_layout", issueFilters?.displayFilters?.layout);
 
   const issueIds = groupedIssueIds[ALL_ISSUES];
   const nextPageResults = getPaginationData(ALL_ISSUES, undefined)?.nextPageResults;
 
   return (
     <IssuesStoreContext.Provider value={EIssuesStoreType.GLOBAL}>
-      {/* <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
+      <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
         <SpreadsheetView
           displayProperties={issueFilters?.displayProperties ?? {}}
           displayFilters={issueFilters?.displayFilters ?? {}}
@@ -226,10 +227,10 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
           isWorkspaceLevel
         />
         <IssuePeekOverview />
-      </IssueLayoutHOC> */}
+      </IssueLayoutHOC>
       {/* <ProjectIssueLayout activeLayout={activeLayout} /> */}
 
-      <div className="relative flex h-full w-full flex-col overflow-hidden">
+      {/* <div className="relative flex h-full w-full flex-col overflow-hidden">
         <ProjectAppliedFiltersRoot />
         <div className="relative h-full w-full overflow-auto bg-custom-background-90">
           {getIssueLoader() === "mutation" && (
@@ -241,7 +242,7 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
         </div>
 
         <IssuePeekOverview />
-      </div>
+      </div> */}
     </IssuesStoreContext.Provider>
   );
 });
