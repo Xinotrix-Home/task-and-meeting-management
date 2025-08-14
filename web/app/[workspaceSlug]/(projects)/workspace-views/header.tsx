@@ -132,7 +132,7 @@ export const GlobalIssuesHeader = observer(() => {
         <Header.RightItem>
           {!isLocked ? (
             <>
-              <LayoutSelection
+              {/* <LayoutSelection
                 layouts={[
                   EIssueLayoutTypes.LIST,
                   EIssueLayoutTypes.KANBAN,
@@ -144,7 +144,7 @@ export const GlobalIssuesHeader = observer(() => {
                   handleLayoutChange(layout);
                 }}
                 selectedLayout={activeLayout}
-              />
+              /> */}
               <FiltersDropdown
                 title={t("common.filters")}
                 placement="bottom-end"

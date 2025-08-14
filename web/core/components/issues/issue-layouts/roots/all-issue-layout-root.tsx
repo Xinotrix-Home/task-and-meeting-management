@@ -211,11 +211,18 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
   const issueIds = groupedIssueIds[ALL_ISSUES];
   const nextPageResults = getPaginationData(ALL_ISSUES, undefined)?.nextPageResults;
 
+  const keepKeys = ["state", "assignee", "project", "priority", "start_date", "due_date"];
+
+  const updatedDisplayProperties = issueFilters?.displayProperties
+    ? Object.fromEntries(Object.keys(issueFilters?.displayProperties).map((key) => [key, keepKeys.includes(key)]))
+    : {};
+
   return (
     <IssuesStoreContext.Provider value={EIssuesStoreType.GLOBAL}>
       <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
         <SpreadsheetView
-          displayProperties={issueFilters?.displayProperties ?? {}}
+          // displayProperties={issueFilters?.displayProperties ?? {}}
+          displayProperties={issueFilters?.displayProperties ? updatedDisplayProperties : {}}
           displayFilters={issueFilters?.displayFilters ?? {}}
           handleDisplayFilterUpdate={handleDisplayFiltersUpdate}
           issueIds={Array.isArray(issueIds) ? issueIds : []}
