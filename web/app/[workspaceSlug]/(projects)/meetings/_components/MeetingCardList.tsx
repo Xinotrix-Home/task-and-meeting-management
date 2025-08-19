@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -10,8 +10,8 @@ import { IMeeting } from "@plane/types";
 import { Button, ContentWrapper } from "@plane/ui";
 import { LogoSpinner } from "@/components/common";
 import { useMeeting } from "@/hooks/store/use-meeting";
-import { IMeetingGroup, sampleMeetings } from "../data/meetings";
-import { useMember } from "@/hooks/store";
+import { IMeetingGroup } from "../data/meetings";
+import { formatDateTime, isMeetingActive } from "../utils/timeDateUtils";
 // edit icon
 
 function groupMeetingsByLabel(meetings: IMeeting[]): IMeetingGroup[] {
@@ -33,16 +33,14 @@ function groupMeetingsByLabel(meetings: IMeeting[]): IMeetingGroup[] {
 }
 
 const MeetingCardList = observer(() => {
-  const now = new Date();
   const router = useRouter();
-  const { workspaceSlug, projectId } = useParams();
+  const { workspaceSlug } = useParams(); //projectId
   const meetingStore = useMeeting();
-  const [searchQuery, setSearchQuery] = useState("");
   const [showAllMeetingsLabel, setShowAllMeetingsLabel] = useState<string | null>("");
 
-  const {
-    project: { projectMemberIds, getProjectMemberDetails },
-  } = useMember();
+  // const {
+  //   project: { projectMemberIds, getProjectMemberDetails },
+  // } = useMember();
 
   // fetch workspace data
   useSWR(
@@ -65,7 +63,6 @@ const MeetingCardList = observer(() => {
     setShowAllMeetingsLabel(meetingLabel);
   };
 
-  console.log("data_meet", groupedMeetings?.length, groupedMeetings);
   const renderMeetingsList = (meetingGroups: IMeetingGroup[]) => (
     <div className="grid grid-cols-1">
       {meetingGroups.map((meetingGroup) => {
@@ -207,62 +204,3 @@ const MeetingCardList = observer(() => {
 });
 
 export default MeetingCardList;
-
-export const formatDate = (isoDate: string) =>
-  new Intl.DateTimeFormat("en-US", {
-    dateStyle: "long",
-  }).format(new Date(isoDate));
-
-export const formatTime = (time: string) => {
-  const [hours, minutes] = time.split(":");
-  const date = new Date();
-  date.setHours(+hours, +minutes);
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-  }).format(date);
-};
-
-export function formatDateTime(dateString: string, type: "date" | "time"): string {
-  // Strip 'Z' to treat as local time if needed
-  const localDate = new Date(dateString.replace(/Z$/, ""));
-
-  if (type === "date") {
-    return localDate.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }); // Example: "30 June 2025"
-  }
-
-  if (type === "time") {
-    return localDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }); // Example: "9:00 AM"
-  }
-
-  return "";
-}
-
-export const isMeetingActive = (start_time: string, end_time: string): boolean => {
-  const now = new Date();
-  const parseLocal = (timeStr: string) => {
-    // Remove 'Z' and treat as local
-    return new Date(timeStr.replace(/Z$/, ""));
-  };
-  const start = parseLocal(start_time);
-  const end = parseLocal(end_time);
-  // console.log("Now     :", now.toString());
-  // console.log("Start   :", start.toString());
-  // console.log("End     :", end.toString())
-  return now >= start && now <= end;
-};
-
-// const active = isMeetingActive("2025-07-18T13:45:00Z", "2025-07-18T16:45:00Z");
-// if (active) {
-//   console.log("Meeting is active now");
-// } else {
-//   console.log("Meeting is not active");
-// }

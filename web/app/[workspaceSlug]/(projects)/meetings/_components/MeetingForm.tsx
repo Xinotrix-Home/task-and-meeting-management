@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, Plus, Trash2, X } from "lucide-react"; // You already use these
-import { setToast, TOAST_TYPE } from "@plane/ui";
-import { useMeeting } from "@/hooks/store/use-meeting";
 import { useParams, useRouter } from "next/navigation";
+import { Plus, Trash2 } from "lucide-react"; // You already use these
 import { useTranslation } from "@plane/i18n";
-import { IAgenda, IMeeting, IUser } from "@plane/types/src/meeting";
-import { useMember } from "@/hooks/store";
-import useSWR from "swr";
-import { serializeMeetingForApi } from "@/services/meeting";
+import { IAgenda, IUser } from "@plane/types/src/meeting";
+import { setToast, TOAST_TYPE } from "@plane/ui";
 import { MembersSettingsLoader } from "@/components/ui";
+import { useMember } from "@/hooks/store";
+import { useMeeting } from "@/hooks/store/use-meeting";
 
 export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode: "create" | "update"; id?: string }) {
   const { workspaceSlug } = useParams();
@@ -18,19 +16,19 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
   const { meetings, addMeeting, updateMeeting } = useMeeting();
   const router = useRouter();
   const {
-    workspace: { fetchWorkspaceMembers, workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
+    workspace: { workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
   } = useMember();
 
   const [formSubmitState, setFormSubmitState] = useState("");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [chairperson, setChairperson] = useState<IUser | {}>({});
+  const [chairperson, setChairperson] = useState<IUser>({});
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [host, setHost] = useState<IUser | {}>({});
+  const [host, setHost] = useState<IUser>({});
   const [participants, setParticipants] = useState<IUser[]>([]);
-  const [attachments, setAttachments] = useState<File[]>([]);
+  // const [attachments, setAttachments] = useState<File[]>([]);
   const [agendaItems, setAgendaItems] = useState<IAgenda[]>([]);
   // ([
   //   // { title: "", assignees: [] as any, duration_minutes: "" }
@@ -44,8 +42,6 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
   //     : null
 
   // );
-
-  if (!workspaceMemberIds) return <MembersSettingsLoader />;
 
   useEffect(() => {
     if (meetingMode === "update" && meetingId) {
@@ -64,7 +60,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
     }
   }, [meetingMode, meetingId]);
 
-  // console.log("load_data", startTime, endTime, date);
+  if (!workspaceMemberIds) return <MembersSettingsLoader />;
 
   // derived values
   const searchedMemberIds = getSearchedWorkspaceMemberIds("");
@@ -82,7 +78,6 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
       last_name,
     };
   });
-  // console.log("members_data", workspaceMemberIds, searchedMemberIds, memberDetails, users);
 
   const addAgenda = () => setAgendaItems([...agendaItems, { title: "", assignees: [], duration_minutes: 0 }]);
 
@@ -94,13 +89,13 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
     setAgendaItems(updated);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setAttachments([...attachments, ...Array.from(e.target.files)]);
-    }
-  };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files) {
+  //     setAttachments([...attachments, ...Array.from(e.target.files)]);
+  //   }
+  // };
 
-  const removeAttachment = (index: number) => setAttachments(attachments.filter((_, i) => i !== index));
+  // const removeAttachment = (index: number) => setAttachments(attachments.filter((_, i) => i !== index));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,16 +119,13 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
         assignees: item?.assignees,
         issues: item?.issues ?? [],
       })),
-      attachments,
+      // attachments,
       status: formState === "draft" ? "draft" : "submitted",
     };
 
-    console.log("met_data", payload, searchedMemberIds);
-    // return;
-
     // meetingMode, meetingId;
     if (meetingMode === "update" && meetingId) {
-      updateMeeting(workspaceSlug?.toString()!, meetingId, payload)
+      updateMeeting(workspaceSlug.toString(), meetingId, payload)
         .then(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
@@ -152,7 +144,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
           setFormSubmitState("");
         });
     } else {
-      addMeeting(workspaceSlug?.toString()!, payload)
+      addMeeting(workspaceSlug.toString(), payload)
         .then(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
@@ -474,8 +466,6 @@ export function extractDateOrTime(isoString: string, type: "date" | "time"): str
 
   const dateObj = new Date(isoString);
   if (isNaN(dateObj.getTime())) return "";
-
-  const pad = (n: number) => n.toString().padStart(2, "0");
 
   if (type === "date") {
     return isoString.split("T")[0]; // Extracts "YYYY-MM-DD"

@@ -1,18 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Clock, Plus, Trash2, StickyNote } from "lucide-react";
-import { IMeeting, IUser } from "@plane/types/src/meeting";
-import { MeetingStore } from "@/store/meeting/meeting.store";
-import { useMeeting } from "@/hooks/store/use-meeting";
-import { useParams, useRouter } from "next/navigation";
 import { observer } from "mobx-react";
-import { setToast, TOAST_TYPE } from "@plane/ui";
+import { useParams, useRouter } from "next/navigation";
+import { Clock, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
-import { IAgenda, IssueItem } from "../data/meetings";
-import { formatDateTime } from "./MeetingCardList";
-import { useMember } from "@/hooks/store";
-import useSWR from "swr";
+import { setToast, TOAST_TYPE } from "@plane/ui";
 import { MembersSettingsLoader } from "@/components/ui";
+import { useMember } from "@/hooks/store";
+import { useMeeting } from "@/hooks/store/use-meeting";
+import { IAgenda } from "../data/meetings";
+import { formatDateTime } from "../utils/timeDateUtils";
 
 // Simulated user list with IDs and names
 
@@ -21,7 +18,7 @@ const MeetingMinutesForm = observer(() => {
   const { t } = useTranslation();
   const router = useRouter();
   const {
-    workspace: { fetchWorkspaceMembers, workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
+    workspace: { workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
   } = useMember();
   const { meetings, updateMeeting } = useMeeting();
   const { meetingId, workspaceSlug } = useParams();
@@ -122,10 +119,9 @@ const MeetingMinutesForm = observer(() => {
       agendas: agendaItems,
       summary,
     };
-    // console.log("Final Meeting Minutes Data:", payload);
 
     if (meetingData?.id) {
-      updateMeeting(workspaceSlug?.toString()!, meetingData?.id, payload)
+      updateMeeting(workspaceSlug.toString(), meetingData?.id, payload)
         .then(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
@@ -163,7 +159,6 @@ const MeetingMinutesForm = observer(() => {
       last_name,
     };
   });
-  // console.log("members_data", meetingData, searchedMemberIds);
 
   return (
     <form
