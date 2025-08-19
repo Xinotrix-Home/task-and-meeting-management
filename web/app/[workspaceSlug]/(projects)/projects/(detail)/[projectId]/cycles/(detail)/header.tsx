@@ -213,7 +213,7 @@ export const CycleIssuesHeader: React.FC = observer(() => {
                           <Tooltip
                             isMobile={isMobile}
                             tooltipContent={`There are ${workItemsCount} ${
-                              workItemsCount > 1 ? "work items" : "work item"
+                              workItemsCount > 1 ? "tasks" : "work item"
                             } in this cycle`}
                             position="bottom"
                           >
@@ -287,7 +287,7 @@ export const CycleIssuesHeader: React.FC = observer(() => {
                   <Button
                     className="h-full self-start"
                     onClick={() => {
-                      setTrackElement("Cycle work items page");
+                      setTrackElement("Cycle tasks page");
                       toggleCreateIssueModal(true, EIssuesStoreType.CYCLE);
                     }}
                     size="sm"

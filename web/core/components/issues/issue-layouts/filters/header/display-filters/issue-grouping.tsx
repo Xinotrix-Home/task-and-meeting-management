@@ -41,7 +41,7 @@ export const FilterIssueGrouping: React.FC<Props> = observer((props) => {
               key={issueType?.key}
               isChecked={activeIssueType === issueType?.key ? true : false}
               onClick={() => handleUpdate(issueType?.key)}
-              title={`${issueType.title} ${isEpic ? "Epics" : "Work items"}`}
+              title={`${issueType.title} ${isEpic ? "Epics" : "Tasks"}`}
               multiple={false}
             />
           ))}

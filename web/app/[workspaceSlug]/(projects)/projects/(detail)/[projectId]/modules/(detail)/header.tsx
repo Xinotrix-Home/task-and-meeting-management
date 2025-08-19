@@ -202,7 +202,7 @@ export const ModuleIssuesHeader: React.FC = observer(() => {
                         <Tooltip
                           isMobile={isMobile}
                           tooltipContent={`There are ${workItemsCount} ${
-                            workItemsCount > 1 ? "work items" : "work item"
+                            workItemsCount > 1 ? "tasks" : "work item"
                           } in this module`}
                           position="bottom"
                         >
@@ -284,7 +284,7 @@ export const ModuleIssuesHeader: React.FC = observer(() => {
               <Button
                 className="hidden sm:flex"
                 onClick={() => {
-                  setTrackElement("Module work items page");
+                  setTrackElement("Module tasks page");
                   toggleCreateIssueModal(true, EIssuesStoreType.MODULE);
                 }}
                 size="sm"

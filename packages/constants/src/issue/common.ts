@@ -82,27 +82,27 @@ export const ISSUE_PRIORITIES: {
   key: TIssuePriorities;
   title: string;
 }[] = [
-  {
-    key: "urgent",
-    title: "Urgent",
-  },
-  {
-    key: "high",
-    title: "High",
-  },
-  {
-    key: "medium",
-    title: "Medium",
-  },
-  {
-    key: "low",
-    title: "Low",
-  },
-  {
-    key: "none",
-    title: "None",
-  },
-];
+    {
+      key: "urgent",
+      title: "Urgent",
+    },
+    {
+      key: "high",
+      title: "High",
+    },
+    {
+      key: "medium",
+      title: "Medium",
+    },
+    {
+      key: "low",
+      title: "Low",
+    },
+    {
+      key: "none",
+      title: "None",
+    },
+  ];
 
 export const DRAG_ALLOWED_GROUPS: TIssueGroupByOptions[] = [
   "state",
@@ -127,48 +127,48 @@ export const ISSUE_GROUP_BY_OPTIONS: {
   key: TIssueGroupByOptions;
   titleTranslationKey: string;
 }[] = [
-  { key: "state", titleTranslationKey: "common.states" },
-  { key: "state_detail.group", titleTranslationKey: "common.state_groups" },
-  { key: "priority", titleTranslationKey: "common.priority" },
-  { key: "team_project", titleTranslationKey: "common.team_project" }, // required this on team issues
-  { key: "project", titleTranslationKey: "common.project" }, // required this on my issues
-  { key: "cycle", titleTranslationKey: "common.cycle" }, // required this on my issues
-  { key: "module", titleTranslationKey: "common.module" }, // required this on my issues
-  { key: "labels", titleTranslationKey: "common.labels" },
-  { key: "assignees", titleTranslationKey: "common.assignees" },
-  { key: "created_by", titleTranslationKey: "common.created_by" },
-  { key: null, titleTranslationKey: "common.none" },
-];
+    { key: "state", titleTranslationKey: "common.states" },
+    { key: "state_detail.group", titleTranslationKey: "common.state_groups" },
+    { key: "priority", titleTranslationKey: "common.priority" },
+    { key: "team_project", titleTranslationKey: "common.team_project" }, // required this on team issues
+    { key: "project", titleTranslationKey: "common.project" }, // required this on my issues
+    { key: "cycle", titleTranslationKey: "common.cycle" }, // required this on my issues
+    { key: "module", titleTranslationKey: "common.module" }, // required this on my issues
+    { key: "labels", titleTranslationKey: "common.labels" },
+    { key: "assignees", titleTranslationKey: "common.assignees" },
+    { key: "created_by", titleTranslationKey: "common.created_by" },
+    { key: null, titleTranslationKey: "common.none" },
+  ];
 
 export const ISSUE_ORDER_BY_OPTIONS: {
   key: TIssueOrderByOptions;
   titleTranslationKey: string;
 }[] = [
-  { key: "sort_order", titleTranslationKey: "common.order_by.manual" },
-  { key: "-created_at", titleTranslationKey: "common.order_by.last_created" },
-  { key: "-updated_at", titleTranslationKey: "common.order_by.last_updated" },
-  { key: "start_date", titleTranslationKey: "common.order_by.start_date" },
-  { key: "target_date", titleTranslationKey: "common.order_by.due_date" },
-  { key: "-priority", titleTranslationKey: "common.priority" },
-];
+    { key: "sort_order", titleTranslationKey: "common.order_by.manual" },
+    { key: "-created_at", titleTranslationKey: "common.order_by.last_created" },
+    { key: "-updated_at", titleTranslationKey: "common.order_by.last_updated" },
+    { key: "start_date", titleTranslationKey: "common.order_by.start_date" },
+    { key: "target_date", titleTranslationKey: "common.order_by.due_date" },
+    { key: "-priority", titleTranslationKey: "common.priority" },
+  ];
 
 export const ISSUE_DISPLAY_PROPERTIES_KEYS: (keyof IIssueDisplayProperties)[] = [
   "assignee",
   "start_date",
   "due_date",
-  "labels",
-  "key",
   "priority",
-  "state",
-  "sub_issue_count",
-  "link",
-  "attachment_count",
-  "estimate",
-  "created_on",
-  "updated_on",
-  "modules",
-  "cycle",
-  "issue_type",
+  // "labels",
+  // "key",
+  // "state",
+  // "sub_issue_count",
+  // "link",
+  // "attachment_count",
+  // "estimate",
+  // "created_on",
+  // "updated_on",
+  // "modules",
+  // "cycle",
+  // "issue_type",
 ];
 
 export const SUB_ISSUES_DISPLAY_PROPERTIES_KEYS: (keyof IIssueDisplayProperties)[] = [
@@ -184,48 +184,48 @@ export const ISSUE_DISPLAY_PROPERTIES: {
   key: keyof IIssueDisplayProperties;
   titleTranslationKey: string;
 }[] = [
-  {
-    key: "key",
-    titleTranslationKey: "issue.display.properties.id",
-  },
-  {
-    key: "issue_type",
-    titleTranslationKey: "issue.display.properties.issue_type",
-  },
-  {
-    key: "assignee",
-    titleTranslationKey: "common.assignee",
-  },
-  {
-    key: "start_date",
-    titleTranslationKey: "common.order_by.start_date",
-  },
-  {
-    key: "due_date",
-    titleTranslationKey: "common.order_by.due_date",
-  },
-  { key: "labels", titleTranslationKey: "common.labels" },
-  {
-    key: "priority",
-    titleTranslationKey: "common.priority",
-  },
-  { key: "state", titleTranslationKey: "common.state" },
-  {
-    key: "sub_issue_count",
-    titleTranslationKey: "issue.display.properties.sub_issue_count",
-  },
-  {
-    key: "attachment_count",
-    titleTranslationKey: "issue.display.properties.attachment_count",
-  },
-  { key: "link", titleTranslationKey: "common.link" },
-  {
-    key: "estimate",
-    titleTranslationKey: "common.estimate",
-  },
-  { key: "modules", titleTranslationKey: "common.module" },
-  { key: "cycle", titleTranslationKey: "common.cycle" },
-];
+    {
+      key: "key",
+      titleTranslationKey: "issue.display.properties.id",
+    },
+    {
+      key: "issue_type",
+      titleTranslationKey: "issue.display.properties.issue_type",
+    },
+    {
+      key: "assignee",
+      titleTranslationKey: "common.assignee",
+    },
+    {
+      key: "start_date",
+      titleTranslationKey: "common.order_by.start_date",
+    },
+    {
+      key: "due_date",
+      titleTranslationKey: "common.order_by.due_date",
+    },
+    { key: "labels", titleTranslationKey: "common.labels" },
+    {
+      key: "priority",
+      titleTranslationKey: "common.priority",
+    },
+    { key: "state", titleTranslationKey: "common.state" },
+    {
+      key: "sub_issue_count",
+      titleTranslationKey: "issue.display.properties.sub_issue_count",
+    },
+    {
+      key: "attachment_count",
+      titleTranslationKey: "issue.display.properties.attachment_count",
+    },
+    { key: "link", titleTranslationKey: "common.link" },
+    {
+      key: "estimate",
+      titleTranslationKey: "common.estimate",
+    },
+    { key: "modules", titleTranslationKey: "common.module" },
+    { key: "cycle", titleTranslationKey: "common.cycle" },
+  ];
 
 export const SPREADSHEET_PROPERTY_LIST: (keyof IIssueDisplayProperties)[] = [
   "state",

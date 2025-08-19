@@ -134,13 +134,13 @@ export const WORKSPACE_SETTINGS_LINKS: {
   access: EUserWorkspaceRoles[];
   highlight: (pathname: string, baseUrl: string) => boolean;
 }[] = [
-  WORKSPACE_SETTINGS["general"],
-  WORKSPACE_SETTINGS["members"],
-  WORKSPACE_SETTINGS["billing-and-plans"],
-  WORKSPACE_SETTINGS["export"],
-  WORKSPACE_SETTINGS["webhooks"],
-  WORKSPACE_SETTINGS["api-tokens"],
-];
+    WORKSPACE_SETTINGS["general"],
+    WORKSPACE_SETTINGS["members"],
+    WORKSPACE_SETTINGS["billing-and-plans"],
+    WORKSPACE_SETTINGS["export"],
+    WORKSPACE_SETTINGS["webhooks"],
+    WORKSPACE_SETTINGS["api-tokens"],
+  ];
 
 export const ROLE = {
   [EUserWorkspaceRoles.GUEST]: "Guest",
@@ -237,23 +237,23 @@ export const DEFAULT_GLOBAL_VIEWS_LIST: {
   key: TStaticViewTypes;
   i18n_label: string;
 }[] = [
-  {
-    key: "all-issues",
-    i18n_label: "default_global_view.all_issues",
-  },
-  {
-    key: "assigned",
-    i18n_label: "default_global_view.assigned",
-  },
-  {
-    key: "created",
-    i18n_label: "default_global_view.created",
-  },
-  {
-    key: "subscribed",
-    i18n_label: "default_global_view.subscribed",
-  },
-];
+    {
+      key: "all-issues",
+      i18n_label: "default_global_view.all_issues",
+    },
+    {
+      key: "assigned",
+      i18n_label: "default_global_view.assigned",
+    },
+    {
+      key: "created",
+      i18n_label: "default_global_view.created",
+    },
+    {
+      key: "subscribed",
+      i18n_label: "default_global_view.subscribed",
+    },
+  ];
 
 export interface IWorkspaceSidebarNavigationItem {
   key: string;
@@ -269,12 +269,12 @@ export const WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS: Record<string, IWorkspa
     href: `/profile/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
   },
-  views: {
-    key: "views",
-    labelTranslationKey: "views",
-    href: `/workspace-views/all-issues/`,
-    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
-  },
+  // views: {
+  //   key: "views",
+  //   labelTranslationKey: "views",
+  //   href: `/workspace-views/all-issues/`,
+  //   access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+  // },
   analytics: {
     key: "analytics",
     labelTranslationKey: "analytics",
@@ -295,7 +295,7 @@ export const WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS: Record<string, IWorkspa
   },
 };
 export const WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebarNavigationItem[] = [
-  WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["views"],
+  // WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["views"],
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["analytics"],
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["your-work"],
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["drafts"],
@@ -303,13 +303,18 @@ export const WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebar
 ];
 
 export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS: Record<string, IWorkspaceSidebarNavigationItem> = {
+  tasks: {
+    key: "tasks",
+    labelTranslationKey: "Tasks",
+    href: `/workspace-views/all-issues/`,
+    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+  },
   meetings: {
     key: "meetings",
     labelTranslationKey: "Meetings",
     href: `/meetings/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
   },
-
   home: {
     key: "home",
     labelTranslationKey: "home.title",
@@ -337,7 +342,7 @@ export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebarN
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["inbox"],
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["projects"],
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["meetings"],
-  
+  WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["tasks"],
 ];
 
 export const IS_FAVORITE_MENU_OPEN = "is_favorite_menu_open";

@@ -147,7 +147,6 @@ export const IssueBlock = observer((props: IssueBlockProps) => {
       });
     }
   };
-
   //TODO: add better logic. This is to have a min width for ID/Key based on the length of project identifier
   const keyMinWidth = displayProperties?.key ? (projectIdentifier?.length ?? 0) * 7 : 0;
 
@@ -202,7 +201,7 @@ export const IssueBlock = observer((props: IssueBlockProps) => {
                 <Tooltip
                   tooltipContent={
                     <>
-                      Only work items within the current
+                      Only tasks within the current
                       <br />
                       project can be selected.
                     </>

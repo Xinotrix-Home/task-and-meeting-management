@@ -2,7 +2,14 @@ import { FC, useCallback, useEffect } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 // plane imports
-import { ALL_ISSUES, EIssueLayoutTypes, EIssuesStoreType, EIssueFilterType , EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
+import {
+  ALL_ISSUES,
+  EIssueLayoutTypes,
+  EIssuesStoreType,
+  EIssueFilterType,
+  EUserPermissions,
+  EUserPermissionsLevel,
+} from "@plane/constants";
 import { IIssueDisplayFilterOptions } from "@plane/types";
 // hooks
 import { useIssues, useUserPermissions } from "@/hooks/store";
@@ -104,10 +111,19 @@ export const BaseSpreadsheetRoot = observer((props: IBaseSpreadsheetRoot) => {
 
   if (!Array.isArray(issueIds)) return null;
 
+  const keepKeys = ["assignee", "project", "priority", "start_date", "due_date"];
+
+  const updatedDisplayProperties = issuesFilter.issueFilters?.displayProperties
+    ? Object.fromEntries(
+        Object.keys(issuesFilter.issueFilters?.displayProperties).map((key) => [key, keepKeys.includes(key)])
+      )
+    : {};
+
   return (
     <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
       <SpreadsheetView
-        displayProperties={issuesFilter.issueFilters?.displayProperties ?? {}}
+        // displayProperties={issuesFilter.issueFilters?.displayProperties ?? {}}
+        displayProperties={issuesFilter.issueFilters?.displayProperties ? updatedDisplayProperties : {}}
         displayFilters={issuesFilter.issueFilters?.displayFilters ?? {}}
         handleDisplayFilterUpdate={handleDisplayFiltersUpdate}
         issueIds={issueIds}

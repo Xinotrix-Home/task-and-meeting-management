@@ -58,13 +58,13 @@ export const getProjectShortcutsList: () => TCommandPaletteActionList = () => {
       action: () => toggleCreateViewModal(true),
     },
     backspace: {
-      title: "Bulk delete work items",
-      description: "Bulk delete work items in the current project",
+      title: "Bulk delete tasks",
+      description: "Bulk delete tasks in the current project",
       action: () => toggleBulkDeleteIssueModal(true),
     },
     delete: {
-      title: "Bulk delete work items",
-      description: "Bulk delete work items in the current project",
+      title: "Bulk delete tasks",
+      description: "Bulk delete tasks in the current project",
       action: () => toggleBulkDeleteIssueModal(true),
     },
   };
@@ -84,7 +84,7 @@ export const getCommonShortcutsList = (platform: string): TCommandPaletteShortcu
   { keys: "M", description: "Create module" },
   { keys: "V", description: "Create view" },
   { keys: "D", description: "Create page" },
-  { keys: "Delete", description: "Bulk delete work items" },
+  { keys: "Delete", description: "Bulk delete tasks" },
   { keys: "Shift,/", description: "Open shortcuts guide" },
   {
     keys: platform === "MacOS" ? "Ctrl,control,C" : "Ctrl,Alt,C",

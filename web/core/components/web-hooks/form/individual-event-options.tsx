@@ -18,7 +18,7 @@ export const INDIVIDUAL_WEBHOOK_OPTIONS: {
   },
   {
     key: "issue",
-    label: "Work items",
+    label: "Tasks",
     description: "Work item created, updated, deleted, added to a cycle or module",
   },
   {

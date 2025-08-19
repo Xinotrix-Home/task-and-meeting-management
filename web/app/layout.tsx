@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   openGraph: {
     title: "Plane | Simple, extensible, open-source project management tool.",
-    description: "Open-source project management tool to manage work items, cycles, and product roadmaps easily",
+    description: "Open-source project management tool to manage tasks, cycles, and product roadmaps easily",
     url: "https://app.plane.so/",
   },
   keywords:

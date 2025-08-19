@@ -9,13 +9,25 @@ import {
   EIssueLayoutTypes,
   EIssueFilterType,
   EIssuesStoreType,
-  ISSUE_DISPLAY_FILTERS_BY_PAGE
-,EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
+  ISSUE_DISPLAY_FILTERS_BY_PAGE,
+  EUserPermissions,
+  EUserPermissionsLevel,
+} from "@plane/constants";
 import { IIssueDisplayFilterOptions } from "@plane/types";
 // hooks
 // components
+import { Spinner } from "@plane/ui";
 import { EmptyState } from "@/components/common";
-import { SpreadsheetView } from "@/components/issues/issue-layouts";
+import {
+  BaseGanttRoot,
+  CalendarLayout,
+  KanBanLayout,
+  ListLayout,
+  ProjectAppliedFiltersRoot,
+  ProjectIssueLayout,
+  ProjectSpreadsheetLayout,
+  SpreadsheetView,
+} from "@/components/issues";
 import { AllIssueQuickActions } from "@/components/issues/issue-layouts/quick-action-dropdowns";
 import { SpreadsheetLayoutLoader } from "@/components/ui";
 // hooks
@@ -52,7 +64,7 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
   useWorkspaceIssueProperties(workspaceSlug);
   // store
   const {
-    issuesFilter: { filters, fetchFilters, updateFilters },
+    issuesFilter: { filters, fetchFilters, updateFilters, getIssueFilters },
     issues: { clear, getIssueLoader, getPaginationData, groupedIssueIds, fetchIssues, fetchNextIssues },
   } = useIssues(EIssuesStoreType.GLOBAL);
   const { updateIssue, removeIssue, archiveIssue } = useIssuesActions(EIssuesStoreType.GLOBAL);
@@ -181,7 +193,7 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
         title="View does not exist"
         description="The view you are looking for does not exist or you don't have permission to view it."
         primaryButton={{
-          text: "Go to All work items",
+          text: "Go to All tasks",
           onClick: () => router.push(`/${workspaceSlug}/workspace-views/all-issues`),
         }}
       />
@@ -192,14 +204,25 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
     return <SpreadsheetLayoutLoader />;
   }
 
+  const activeLayout = issueFilters?.displayFilters?.layout;
+  // const activeLayout = EIssueLayoutTypes?.SPREADSHEET; //  issueFilters?.displayFilters?.layout;
+  // console.log("issues_layout", issueFilters?.displayFilters?.layout);
+
   const issueIds = groupedIssueIds[ALL_ISSUES];
   const nextPageResults = getPaginationData(ALL_ISSUES, undefined)?.nextPageResults;
+
+  const keepKeys = ["state", "assignee", "project", "priority", "start_date", "due_date"];
+
+  const updatedDisplayProperties = issueFilters?.displayProperties
+    ? Object.fromEntries(Object.keys(issueFilters?.displayProperties).map((key) => [key, keepKeys.includes(key)]))
+    : {};
 
   return (
     <IssuesStoreContext.Provider value={EIssuesStoreType.GLOBAL}>
       <IssueLayoutHOC layout={EIssueLayoutTypes.SPREADSHEET}>
         <SpreadsheetView
-          displayProperties={issueFilters?.displayProperties ?? {}}
+          // displayProperties={issueFilters?.displayProperties ?? {}}
+          displayProperties={issueFilters?.displayProperties ? updatedDisplayProperties : {}}
           displayFilters={issueFilters?.displayFilters ?? {}}
           handleDisplayFilterUpdate={handleDisplayFiltersUpdate}
           issueIds={Array.isArray(issueIds) ? issueIds : []}
@@ -210,9 +233,23 @@ export const AllIssueLayoutRoot: React.FC<Props> = observer((props: Props) => {
           loadMoreIssues={fetchNextPages}
           isWorkspaceLevel
         />
-        {/* peek overview */}
         <IssuePeekOverview />
       </IssueLayoutHOC>
+      {/* <ProjectIssueLayout activeLayout={activeLayout} /> */}
+
+      {/* <div className="relative flex h-full w-full flex-col overflow-hidden">
+        <ProjectAppliedFiltersRoot />
+        <div className="relative h-full w-full overflow-auto bg-custom-background-90">
+          {getIssueLoader() === "mutation" && (
+            <div className="fixed w-[40px] h-[40px] z-50 right-[20px] top-[70px] flex justify-center items-center bg-custom-background-80 shadow-sm rounded">
+              <Spinner className="w-4 h-4" />
+            </div>
+          )}
+          <ProjectIssueLayout activeLayout={activeLayout} />
+        </div>
+
+        <IssuePeekOverview />
+      </div> */}
     </IssuesStoreContext.Provider>
   );
 });

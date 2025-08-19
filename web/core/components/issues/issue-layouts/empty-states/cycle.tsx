@@ -69,14 +69,14 @@ export const CycleEmptyState: React.FC = observer(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Success!",
-          message: "Work items added to the cycle successfully.",
+          message: "Tasks added to the cycle successfully.",
         })
       )
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
           title: "Error!",
-          message: "Selected work items could not be added to the cycle. Please try again.",
+          message: "Selected tasks could not be added to the cycle. Please try again.",
         })
       );
   };

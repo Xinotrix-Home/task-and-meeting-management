@@ -73,7 +73,7 @@ export const SubIssuesListGroup: FC<TSubIssuesListGroupProps> = observer((props)
         }
         buttonClassName={cn("hidden", !isAllIssues && "block")}
       >
-        {/* Work items list */}
+        {/* Tasks list */}
         <div className="pl-2">
           {workItemIds?.map((workItemId) => (
             <SubIssuesListItem
