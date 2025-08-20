@@ -309,6 +309,12 @@ export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS: Record<string, IWorkspac
     href: `/workspace-views/all-issues/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
   },
+  organogram: {
+    key: "organogram",
+    labelTranslationKey: "Organogram",
+    href: `/organogram/`,
+    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+  },
   meetings: {
     key: "meetings",
     labelTranslationKey: "Meetings",
@@ -342,6 +348,7 @@ export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebarN
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["inbox"],
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["projects"],
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["meetings"],
+  WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["organogram"],
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["tasks"],
 ];
 

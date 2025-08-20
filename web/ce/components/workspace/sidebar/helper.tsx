@@ -1,4 +1,4 @@
-import { BarChart2, Briefcase, CalendarDays, Home, Inbox, Layers, PenSquare } from "lucide-react";
+import { BarChart2, Briefcase, CalendarDays, Home, Inbox, Layers, PenSquare, Users } from "lucide-react";
 import { ArchiveIcon, ContrastIcon, UserActivityIcon } from "@plane/ui";
 import { cn } from "@plane/utils";
 
@@ -26,5 +26,7 @@ export const getSidebarNavigationItemIcon = (key: string, className: string = ""
       return <CalendarDays className={cn("size-4 flex-shrink-0", className)} />;
     case "tasks":
       return <Layers className={cn("size-4 flex-shrink-0", className)} />;
+    case "organogram":
+      return <Users className={cn("size-4 flex-shrink-0", className)} />;
   }
 };
