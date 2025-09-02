@@ -5,9 +5,10 @@ import { observer } from "mobx-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
-import { ArrowRightToLineIcon, PencilIcon, ViewIcon } from "lucide-react";
+import { PencilIcon, PlayIcon, SquarePen, ViewIcon } from "lucide-react";
+import { useTranslation } from "@plane/i18n";
 import { IMeeting } from "@plane/types";
-import { Button, ContentWrapper } from "@plane/ui";
+import { Button, ContentWrapper, setToast, TOAST_TYPE } from "@plane/ui";
 import { LogoSpinner } from "@/components/common";
 import { useUser } from "@/hooks/store";
 import { useMeeting } from "@/hooks/store/use-meeting";
@@ -39,6 +40,7 @@ const MeetingCardList = observer(() => {
   const meetingStore = useMeeting();
   const { data: currentUser } = useUser();
   const [showAllMeetingsLabel, setShowAllMeetingsLabel] = useState<string | null>("");
+  const { t } = useTranslation();
   // const {
   //   project: { projectMemberIds, getProjectMemberDetails },
   // } = useMember();
@@ -63,6 +65,28 @@ const MeetingCardList = observer(() => {
 
   const handleVIewAllMeetings = (meetingLabel: string) => {
     setShowAllMeetingsLabel(meetingLabel);
+  };
+
+  const handleStartMeeting = (meetingData: any) => {
+    console.log("Start meeting:", meetingData);
+    if (meetingData?.id) {
+      meetingStore
+        ?.updateMeeting(workspaceSlug.toString(), meetingData?.id, { ...meetingData, status: "live" })
+        .then(() => {
+          setToast({
+            type: TOAST_TYPE.SUCCESS,
+            title: "Success",
+            message: "Meeting started successfully",
+          });
+        })
+        .catch(() => {
+          setToast({
+            type: TOAST_TYPE.ERROR,
+            title: t("error"),
+            message: t("something_went_wrong"),
+          });
+        });
+    }
   };
 
   const renderMeetingsList = (meetingGroups: IMeetingGroup[]) => (
@@ -107,7 +131,6 @@ const MeetingCardList = observer(() => {
               </div>
               {/* Meeting Rows */}
               {meetings?.map((meeting) => {
-                console.log("Current_User2:", meeting);
                 const isHost = meeting?.host?.id === currentUser?.id;
                 const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
                 return (
@@ -120,16 +143,22 @@ const MeetingCardList = observer(() => {
                     <div className="text-sm">{meeting?.host?.display_name}</div>
                     {/* <div className="text-sm">{meeting?.participants?.map((p) => p?.display_name).join(", ")}</div> */}
                     <div className="flex gap-4 justify-center p-1">
-                      {/* {!(meeting?.id === "Me") && !(meetingGroup?.label === "Completed") && ( */}
-
+                      {meetingGroup?.label === "upcoming" && isHost && !isLive && (
+                        <div className="relative group">
+                          <PlayIcon size={18} onClick={() => handleStartMeeting(meeting)} />
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-5">
+                            Start meeting
+                          </div>
+                        </div>
+                      )}
                       {/* Meeting Minute */}
-                      {isLive && isHost && (
+                      {isLive && isHost && meetingGroup?.label === "live" && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/meeting-minute/${meeting?.id}`}
                             className="rounded hover:bg-gray-700"
                           >
-                            <ArrowRightToLineIcon size={18} />
+                            <SquarePen size={18} />
                           </Link>
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-5">
                             Meeting minutes
@@ -138,7 +167,7 @@ const MeetingCardList = observer(() => {
                       )}
 
                       {/* Edit Meeting */}
-                      {!(meetingGroup?.label === "Completed") && !isLive && isHost && (
+                      {(meetingGroup?.label === "upcoming" || meetingGroup?.label === "draft") && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/update-meeting/${meeting?.id}`}

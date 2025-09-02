@@ -120,7 +120,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
         issues: item?.issues ?? [],
       })),
       // attachments,
-      status: formState === "draft" ? "draft" : "submitted",
+      status: formState === "draft" ? "draft" : "upcoming",
     };
 
     // meetingMode, meetingId;
