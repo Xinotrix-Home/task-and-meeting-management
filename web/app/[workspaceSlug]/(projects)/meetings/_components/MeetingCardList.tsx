@@ -9,6 +9,7 @@ import { ArrowRightToLineIcon, PencilIcon, ViewIcon } from "lucide-react";
 import { IMeeting } from "@plane/types";
 import { Button, ContentWrapper } from "@plane/ui";
 import { LogoSpinner } from "@/components/common";
+import { useUser } from "@/hooks/store";
 import { useMeeting } from "@/hooks/store/use-meeting";
 import { IMeetingGroup } from "../data/meetings";
 import { formatDateTime, isMeetingActive } from "../utils/timeDateUtils";
@@ -36,8 +37,8 @@ const MeetingCardList = observer(() => {
   const router = useRouter();
   const { workspaceSlug } = useParams(); //projectId
   const meetingStore = useMeeting();
+  const { data: currentUser } = useUser();
   const [showAllMeetingsLabel, setShowAllMeetingsLabel] = useState<string | null>("");
-
   // const {
   //   project: { projectMemberIds, getProjectMemberDetails },
   // } = useMember();
@@ -49,6 +50,7 @@ const MeetingCardList = observer(() => {
     { revalidateIfStale: false, revalidateOnFocus: false }
   );
 
+  console.log("Current_User:", currentUser);
   if (meetingStore.isLoading)
     return (
       <div className="relative flex h-screen w-full items-center justify-center">
@@ -105,6 +107,8 @@ const MeetingCardList = observer(() => {
               </div>
               {/* Meeting Rows */}
               {meetings?.map((meeting) => {
+                console.log("Current_User2:", meeting);
+                const isHost = meeting?.host?.id === currentUser?.id;
                 const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
                 return (
                   <div key={meeting?.id} className="grid grid-cols-7 items-center justify-center gap-5 px-4 py-3">
@@ -117,8 +121,9 @@ const MeetingCardList = observer(() => {
                     {/* <div className="text-sm">{meeting?.participants?.map((p) => p?.display_name).join(", ")}</div> */}
                     <div className="flex gap-4 justify-center p-1">
                       {/* {!(meeting?.id === "Me") && !(meetingGroup?.label === "Completed") && ( */}
+
                       {/* Meeting Minute */}
-                      {isLive && (
+                      {isLive && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/meeting-minute/${meeting?.id}`}
@@ -133,7 +138,7 @@ const MeetingCardList = observer(() => {
                       )}
 
                       {/* Edit Meeting */}
-                      {!(meetingGroup?.label === "Completed") && !isLive && (
+                      {!(meetingGroup?.label === "Completed") && !isLive && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/update-meeting/${meeting?.id}`}
