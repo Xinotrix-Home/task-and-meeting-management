@@ -132,7 +132,11 @@ const MeetingCardList = observer(() => {
               {/* Meeting Rows */}
               {meetings?.map((meeting) => {
                 const isHost = meeting?.host?.id === currentUser?.id;
-                const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
+                // const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
+                const isLive = meetingGroup?.label.toLowerCase() === "live";
+                const isUpcoming = meetingGroup?.label.toLowerCase() === "upcoming";
+                const isDraft = meetingGroup?.label.toLowerCase() === "draft";
+
                 return (
                   <div key={meeting?.id} className="grid grid-cols-7 items-center justify-center gap-5 px-4 py-3">
                     <div className="text-sm">{formatDateTime(meeting?.start_time, "date")}</div>
@@ -142,45 +146,54 @@ const MeetingCardList = observer(() => {
                     <div className="text-sm">{meeting?.chairperson?.display_name}</div>
                     <div className="text-sm">{meeting?.host?.display_name}</div>
                     {/* <div className="text-sm">{meeting?.participants?.map((p) => p?.display_name).join(", ")}</div> */}
+
                     <div className="flex gap-4 justify-center p-1">
-                      {meetingGroup?.label === "upcoming" && isHost && !isLive && (
+                      {/* Start meeting */}
+                      {isUpcoming && isHost && !isLive && (
                         <div className="relative group">
-                          <PlayIcon size={18} onClick={() => handleStartMeeting(meeting)} />
+                          <div className=" cursor-pointer">
+                            <PlayIcon
+                              className=" cursor-pointer"
+                              size={18}
+                              onClick={() => handleStartMeeting(meeting)}
+                            />
+                          </div>
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-5">
                             Start meeting
                           </div>
                         </div>
                       )}
-                      {/* Meeting Minute */}
-                      {isLive && isHost && meetingGroup?.label === "live" && (
+                      {/* Join meeting -- meeting minutes */}
+                      {isLive && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/meeting-minute/${meeting?.id}`}
                             className="rounded hover:bg-gray-700"
                           >
-                            <SquarePen size={18} />
+                            <PencilIcon size={18} />
                           </Link>
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-5">
-                            Meeting minutes
+                            Join Meeting
                           </div>
                         </div>
                       )}
 
                       {/* Edit Meeting */}
-                      {(meetingGroup?.label === "upcoming" || meetingGroup?.label === "draft") && isHost && (
+                      {isDraft && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/update-meeting/${meeting?.id}`}
                             className=" rounded hover:bg-gray-700"
                           >
-                            <PencilIcon size={18} />
+                            <SquarePen size={18} />
                           </Link>
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
                             Edit meeting
                           </div>
                         </div>
                       )}
-                      {/* View Details */}
+
+                      {/* View meeting */}
                       <div className="relative group">
                         <Link
                           href={`/${workspaceSlug?.toString()}/meetings/meeting-details/${meeting?.id}`}

@@ -454,7 +454,7 @@ export default function MeetingForm({ mode: meetingMode, id: meetingId }: { mode
           onClick={() => setFormSubmitState("submit")}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
-          {meetingMode === "update" ? "Save" : "Submit"}
+          Save
         </button>
       </div>
     </form>
