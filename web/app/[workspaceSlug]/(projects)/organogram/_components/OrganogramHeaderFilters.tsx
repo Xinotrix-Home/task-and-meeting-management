@@ -16,7 +16,7 @@ type Props = {
 const MEETING_TYPES = ["In-Person", "Online", "Hybrid"];
 const MEETING_STATUSES = ["Scheduled", "Completed", "Cancelled"];
 
-export default function MeetingHeaderFilters({
+export default function OrganogramHeaderFilters({
   filterMenuButton,
   // isMobile,
   classname = "",

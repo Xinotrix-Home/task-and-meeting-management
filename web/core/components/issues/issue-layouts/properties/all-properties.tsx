@@ -280,7 +280,7 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
     <div className={className}>
       {/* basic properties */}
       {/* state */}
-      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="state">
+      {/* <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="state">
         <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
           <StateDropdown
             buttonContainerClassName="truncate max-w-40"
@@ -293,19 +293,24 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
             showTooltip
           />
         </div>
-      </WithDisplayPropertiesHOC>
+      </WithDisplayPropertiesHOC> */}
 
-      {/* priority */}
-      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="priority">
+      {/* assignee */}
+      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="assignee">
         <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <PriorityDropdown
-            value={issue?.priority}
-            onChange={handlePriority}
+          <MemberDropdown
+            projectId={issue?.project_id}
+            value={issue?.assignee_ids}
+            onChange={handleAssignee}
             disabled={isReadOnly}
-            buttonVariant="border-without-text"
-            buttonClassName="border"
+            multiple
+            buttonVariant={issue.assignee_ids?.length > 0 ? "transparent-without-text" : "border-without-text"}
+            buttonClassName={issue.assignee_ids?.length > 0 ? "hover:bg-transparent px-0" : ""}
+            showTooltip={issue?.assignee_ids?.length === 0}
+            placeholder={t("common.assignees")}
+            optionsClassName="z-10"
+            tooltipContent=""
             renderByDefault={isMobile}
-            showTooltip
           />
         </div>
       </WithDisplayPropertiesHOC>
@@ -348,31 +353,25 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
         </div>
       </WithDisplayPropertiesHOC>
 
-      {/* assignee */}
-      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="assignee">
+      {/* priority */}
+      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="priority">
         <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <MemberDropdown
-            projectId={issue?.project_id}
-            value={issue?.assignee_ids}
-            onChange={handleAssignee}
+          <PriorityDropdown
+            value={issue?.priority}
+            onChange={handlePriority}
             disabled={isReadOnly}
-            multiple
-            buttonVariant={issue.assignee_ids?.length > 0 ? "transparent-without-text" : "border-without-text"}
-            buttonClassName={issue.assignee_ids?.length > 0 ? "hover:bg-transparent px-0" : ""}
-            showTooltip={issue?.assignee_ids?.length === 0}
-            placeholder={t("common.assignees")}
-            optionsClassName="z-10"
-            tooltipContent=""
+            buttonVariant="border-without-text"
+            buttonClassName="border"
             renderByDefault={isMobile}
+            showTooltip
           />
         </div>
       </WithDisplayPropertiesHOC>
-
       <>
         {!isEpic && (
           <>
             {/* modules */}
-            {projectDetails?.module_view && (
+            {/* {projectDetails?.module_view && (
               <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="modules">
                 <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
                   <ModuleDropdown
@@ -389,10 +388,10 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
                   />
                 </div>
               </WithDisplayPropertiesHOC>
-            )}
+            )} */}
 
             {/* cycles */}
-            {projectDetails?.cycle_view && (
+            {/* {projectDetails?.cycle_view && (
               <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="cycle">
                 <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
                   <CycleDropdown
@@ -407,13 +406,13 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
                   />
                 </div>
               </WithDisplayPropertiesHOC>
-            )}
+            )} */}
           </>
         )}
       </>
 
       {/* estimates */}
-      {projectId && areEstimateEnabledByProjectId(projectId?.toString()) && (
+      {/* {projectId && areEstimateEnabledByProjectId(projectId?.toString()) && (
         <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="estimate">
           <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
             <EstimateDropdown
@@ -427,11 +426,11 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
             />
           </div>
         </WithDisplayPropertiesHOC>
-      )}
+      )} */}
 
       {/* extra render properties */}
       {/* sub-issues */}
-      {!isEpic && (
+      {/* {!isEpic && (
         <WithDisplayPropertiesHOC
           displayProperties={displayProperties}
           displayPropertyKey="sub_issue_count"
@@ -462,10 +461,10 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
             </div>
           </Tooltip>
         </WithDisplayPropertiesHOC>
-      )}
+      )} */}
 
       {/* attachments */}
-      <WithDisplayPropertiesHOC
+      {/* <WithDisplayPropertiesHOC
         displayProperties={displayProperties}
         displayPropertyKey="attachment_count"
         shouldRenderProperty={(properties) => !!properties.attachment_count && !!issue.attachment_count}
@@ -485,10 +484,10 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
             <div className="text-xs">{issue.attachment_count}</div>
           </div>
         </Tooltip>
-      </WithDisplayPropertiesHOC>
+      </WithDisplayPropertiesHOC> */}
 
       {/* link */}
-      <WithDisplayPropertiesHOC
+      {/* <WithDisplayPropertiesHOC
         displayProperties={displayProperties}
         displayPropertyKey="link"
         shouldRenderProperty={(properties) => !!properties.link && !!issue.link_count}
@@ -508,13 +507,13 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
             <div className="text-xs">{issue.link_count}</div>
           </div>
         </Tooltip>
-      </WithDisplayPropertiesHOC>
+      </WithDisplayPropertiesHOC> */}
 
       {/* Additional Properties */}
-      <WorkItemLayoutAdditionalProperties displayProperties={displayProperties} issue={issue} />
+      {/* <WorkItemLayoutAdditionalProperties displayProperties={displayProperties} issue={issue} /> */}
 
       {/* label */}
-      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="labels">
+      {/* <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="labels">
         <IssuePropertyLabels
           projectId={issue?.project_id || null}
           value={issue?.label_ids || null}
@@ -525,7 +524,7 @@ export const IssueProperties: React.FC<IIssueProperties> = observer((props) => {
           hideDropdownArrow
           maxRender={3}
         />
-      </WithDisplayPropertiesHOC>
+      </WithDisplayPropertiesHOC> */}
     </div>
   );
 });

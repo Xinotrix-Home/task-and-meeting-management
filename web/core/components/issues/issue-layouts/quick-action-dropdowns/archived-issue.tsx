@@ -65,7 +65,7 @@ export const ArchivedIssueQuickActions: React.FC<IQuickActionProps> = observer((
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Restore success",
-          message: "Your work item can be found in project work items.",
+          message: "Your work item can be found in project tasks.",
         });
       })
       .catch(() => {

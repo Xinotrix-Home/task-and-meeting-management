@@ -1,27 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Clock, Plus, Trash2, StickyNote } from "lucide-react";
-import { IMeeting, IUser } from "@plane/types/src/meeting";
-import { MeetingStore } from "@/store/meeting/meeting.store";
-import { useMeeting } from "@/hooks/store/use-meeting";
-import { useParams, useRouter } from "next/navigation";
 import { observer } from "mobx-react";
-import { setToast, TOAST_TYPE } from "@plane/ui";
+import { useParams, useRouter } from "next/navigation";
+import { Clock, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
-import { IAgenda, IssueItem } from "../data/meetings";
-import { formatDateTime } from "./MeetingCardList";
-import { useMember } from "@/hooks/store";
-import useSWR from "swr";
+import { setToast, TOAST_TYPE } from "@plane/ui";
 import { MembersSettingsLoader } from "@/components/ui";
+import { useMember } from "@/hooks/store";
+import { useMeeting } from "@/hooks/store/use-meeting";
+import { IAgenda } from "../data/meetings";
+import { formatDateTime } from "../utils/timeDateUtils";
 
 // Simulated user list with IDs and names
 
 const MeetingMinutesForm = observer(() => {
   const [summary, setSummary] = useState("");
   const { t } = useTranslation();
+
   const router = useRouter();
   const {
-    workspace: { fetchWorkspaceMembers, workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
+    workspace: { workspaceMemberIds, getSearchedWorkspaceMemberIds, getWorkspaceMemberDetails },
   } = useMember();
   const { meetings, updateMeeting } = useMeeting();
   const { meetingId, workspaceSlug } = useParams();
@@ -121,16 +119,17 @@ const MeetingMinutesForm = observer(() => {
       ...meetingData,
       agendas: agendaItems,
       summary,
+      status: "completed",
     };
-    // console.log("Final Meeting Minutes Data:", payload);
+    console.log("Payload:", payload);
 
     if (meetingData?.id) {
-      updateMeeting(workspaceSlug?.toString()!, meetingData?.id, payload)
+      updateMeeting(workspaceSlug.toString(), meetingData?.id, payload)
         .then(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
             title: t("success"),
-            message: t("meeting_minutes_saved_successfully"),
+            message: t("meeting_saved_successfully"),
           });
 
           router.push(`/${workspaceSlug}/meetings`);
@@ -163,7 +162,6 @@ const MeetingMinutesForm = observer(() => {
       last_name,
     };
   });
-  // console.log("members_data", meetingData, searchedMemberIds);
 
   return (
     <form
@@ -243,11 +241,23 @@ const MeetingMinutesForm = observer(() => {
               <div className="md:col-span-2">
                 <label className="text-sm font-semibold text-gray-300 block mb-1">Owner</label>
                 <select
-                  // defaultValue={agenda?.assignees}
+                  onChange={(e) => {
+                    const selectedUser = users?.find((u) => u.id === e.target.value);
+                    if (selectedUser && !agenda.assignees?.some((a) => a.id === selectedUser.id)) {
+                      const newAssignees = [...(agenda.assignees || []), selectedUser];
+                      handleUpdateAgenda(agendaIdx, "assignees", newAssignees);
+                    }
+                  }}
                   className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white"
                 >
-                  <option disabled>Select owner</option>
-                  {users?.map((u, i) => <option key={i}>{u?.display_name}</option>)}
+                  <option disabled selected>
+                    Select owner
+                  </option>
+                  {users?.map((u, i) => (
+                    <option key={i} value={u.id}>
+                      {u.display_name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>

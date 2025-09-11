@@ -24,8 +24,8 @@ export const ProjectViewEmptyState: React.FC = observer(() => {
   return (
     <div className="grid h-full w-full place-items-center">
       <EmptyState
-        title="View work items will appear here"
-        description="Work items help you track individual pieces of work. With work items, keep track of what's going on, who is working on it, and what's done."
+        title="View tasks will appear here"
+        description="Tasks help you track individual pieces of work. With tasks, keep track of what's going on, who is working on it, and what's done."
         image={emptyIssue}
         primaryButton={
           isCreatingIssueAllowed

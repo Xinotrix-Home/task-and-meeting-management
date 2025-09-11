@@ -130,7 +130,7 @@ export const ModuleIssueQuickActions: React.FC<IQuickActionProps> = observer((pr
     {
       key: "archive",
       title: "Archive",
-      description: isInArchivableGroup ? undefined : "Only completed or canceled\nwork items can be archived",
+      description: isInArchivableGroup ? undefined : "Only completed or canceled\ntasks can be archived",
       icon: ArchiveIcon,
       className: "items-start",
       iconClassName: "mt-1",

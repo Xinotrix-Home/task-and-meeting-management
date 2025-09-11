@@ -43,7 +43,7 @@ export const GithubImportData: FC<Props> = observer((props) => {
           <div className="col-span-12 sm:col-span-8">
             <h4 className="font-semibold">Select Repository</h4>
             <p className="text-xs text-custom-text-200">
-              Select the repository that you want the work items to be imported from.
+              Select the repository that you want the tasks to be imported from.
             </p>
           </div>
           <div className="col-span-12 sm:col-span-4">
@@ -94,7 +94,7 @@ export const GithubImportData: FC<Props> = observer((props) => {
         <div className="grid grid-cols-12 gap-4 sm:gap-16">
           <div className="col-span-12 sm:col-span-8">
             <h4 className="font-semibold">Sync work item</h4>
-            <p className="text-xs text-custom-text-200">Set whether you want to sync the work items or not.</p>
+            <p className="text-xs text-custom-text-200">Set whether you want to sync the tasks or not.</p>
           </div>
           <div className="col-span-12 sm:col-span-4">
             <Controller

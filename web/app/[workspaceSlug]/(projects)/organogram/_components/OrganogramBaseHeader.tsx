@@ -14,10 +14,9 @@ import { BreadcrumbLink } from "@/components/common";
 // plane constants
 // hooks
 import { useUserPermissions } from "@/hooks/store";
-import MeetingHeaderFilters from "./MeetingHeaderFilters";
-import { MeetingSearch } from "./MeetingSearch";
+import OrganogramHeaderFilters from "./OrganogramHeaderFilters";
 
-export const MeetingsBaseHeader = observer(() => {
+export const OrganogramBaseHeader = observer(() => {
   const pathname = usePathname();
   const { allowPermissions } = useUserPermissions();
 
@@ -39,9 +38,8 @@ export const MeetingsBaseHeader = observer(() => {
         </Breadcrumbs>
       </Header.LeftItem>
       <Header.RightItem>
-        <MeetingSearch />
         <div className="hidden md:flex">
-          <MeetingHeaderFilters />
+          <OrganogramHeaderFilters />
         </div>
         {isAuthorizedUser && !isArchived ? (
           <Button size="sm" className="items-center gap-1">
@@ -50,9 +48,9 @@ export const MeetingsBaseHeader = observer(() => {
               className="btn btn-primary flex items-center gap-2"
             >
               <Plus size={16} />
-              <span className="hidden sm:inline-block">Create Meeting</span>
+              <span className="hidden sm:inline-block">Create</span>
             </Link>
-            <span className="inline-block sm:hidden">Meeting</span>
+            <span className="inline-block sm:hidden">Organograms</span>
           </Button>
         ) : null}
       </Header.RightItem>

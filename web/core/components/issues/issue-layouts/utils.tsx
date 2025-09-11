@@ -92,7 +92,7 @@ export const getGroupByColumns = ({
     return [
       {
         id: "All Issues",
-        name: `All ${isEpic ? "Epics" : "work items"}`,
+        name: `All ${isEpic ? "Epics" : "tasks"}`,
         payload: {},
         icon: undefined,
       },

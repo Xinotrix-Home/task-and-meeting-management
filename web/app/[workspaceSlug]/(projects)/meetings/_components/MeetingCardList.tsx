@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
-import { ArrowRightToLineIcon, PencilIcon, ViewIcon } from "lucide-react";
+import { PencilIcon, PlayIcon, SquarePen, ViewIcon } from "lucide-react";
+import { useTranslation } from "@plane/i18n";
 import { IMeeting } from "@plane/types";
-import { Button, ContentWrapper } from "@plane/ui";
+import { Button, ContentWrapper, setToast, TOAST_TYPE } from "@plane/ui";
 import { LogoSpinner } from "@/components/common";
+import { useUser } from "@/hooks/store";
 import { useMeeting } from "@/hooks/store/use-meeting";
-import { IMeetingGroup, sampleMeetings } from "../data/meetings";
-import { useMember } from "@/hooks/store";
+import { IMeetingGroup } from "../data/meetings";
+import { formatDateTime, isMeetingActive } from "../utils/timeDateUtils";
 // edit icon
 
 function groupMeetingsByLabel(meetings: IMeeting[]): IMeetingGroup[] {
@@ -33,16 +35,15 @@ function groupMeetingsByLabel(meetings: IMeeting[]): IMeetingGroup[] {
 }
 
 const MeetingCardList = observer(() => {
-  const now = new Date();
   const router = useRouter();
-  const { workspaceSlug, projectId } = useParams();
+  const { workspaceSlug } = useParams(); //projectId
   const meetingStore = useMeeting();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { data: currentUser } = useUser();
   const [showAllMeetingsLabel, setShowAllMeetingsLabel] = useState<string | null>("");
-
-  const {
-    project: { projectMemberIds, getProjectMemberDetails },
-  } = useMember();
+  const { t } = useTranslation();
+  // const {
+  //   project: { projectMemberIds, getProjectMemberDetails },
+  // } = useMember();
 
   // fetch workspace data
   useSWR(
@@ -51,6 +52,7 @@ const MeetingCardList = observer(() => {
     { revalidateIfStale: false, revalidateOnFocus: false }
   );
 
+  console.log("Current_User:", currentUser);
   if (meetingStore.isLoading)
     return (
       <div className="relative flex h-screen w-full items-center justify-center">
@@ -65,7 +67,28 @@ const MeetingCardList = observer(() => {
     setShowAllMeetingsLabel(meetingLabel);
   };
 
-  console.log("data_meet", groupedMeetings?.length, groupedMeetings);
+  const handleStartMeeting = (meetingData: any) => {
+    console.log("Start meeting:", meetingData);
+    if (meetingData?.id) {
+      meetingStore
+        ?.updateMeeting(workspaceSlug.toString(), meetingData?.id, { ...meetingData, status: "live" })
+        .then(() => {
+          setToast({
+            type: TOAST_TYPE.SUCCESS,
+            title: "Success",
+            message: "Meeting started successfully",
+          });
+        })
+        .catch(() => {
+          setToast({
+            type: TOAST_TYPE.ERROR,
+            title: t("error"),
+            message: t("something_went_wrong"),
+          });
+        });
+    }
+  };
+
   const renderMeetingsList = (meetingGroups: IMeetingGroup[]) => (
     <div className="grid grid-cols-1">
       {meetingGroups.map((meetingGroup) => {
@@ -108,7 +131,12 @@ const MeetingCardList = observer(() => {
               </div>
               {/* Meeting Rows */}
               {meetings?.map((meeting) => {
-                const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
+                const isHost = meeting?.host?.id === currentUser?.id;
+                // const isLive = isMeetingActive(meeting?.start_time, meeting?.end_time);
+                const isLive = meetingGroup?.label.toLowerCase() === "live";
+                const isUpcoming = meetingGroup?.label.toLowerCase() === "upcoming";
+                const isDraft = meetingGroup?.label.toLowerCase() === "draft";
+
                 return (
                   <div key={meeting?.id} className="grid grid-cols-7 items-center justify-center gap-5 px-4 py-3">
                     <div className="text-sm">{formatDateTime(meeting?.start_time, "date")}</div>
@@ -118,38 +146,54 @@ const MeetingCardList = observer(() => {
                     <div className="text-sm">{meeting?.chairperson?.display_name}</div>
                     <div className="text-sm">{meeting?.host?.display_name}</div>
                     {/* <div className="text-sm">{meeting?.participants?.map((p) => p?.display_name).join(", ")}</div> */}
+
                     <div className="flex gap-4 justify-center p-1">
-                      {/* {!(meeting?.id === "Me") && !(meetingGroup?.label === "Completed") && ( */}
-                      {/* Meeting Minute */}
-                      {isLive && (
+                      {/* Start meeting */}
+                      {isUpcoming && isHost && !isLive && (
+                        <div className="relative group">
+                          <div className=" cursor-pointer">
+                            <PlayIcon
+                              className=" cursor-pointer"
+                              size={18}
+                              onClick={() => handleStartMeeting(meeting)}
+                            />
+                          </div>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-5">
+                            Start meeting
+                          </div>
+                        </div>
+                      )}
+                      {/* Join meeting -- meeting minutes */}
+                      {isLive && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/meeting-minute/${meeting?.id}`}
                             className="rounded hover:bg-gray-700"
                           >
-                            <ArrowRightToLineIcon size={18} />
+                            <PencilIcon size={18} />
                           </Link>
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-5">
-                            Meeting minutes
+                            Join Meeting
                           </div>
                         </div>
                       )}
 
                       {/* Edit Meeting */}
-                      {!(meetingGroup?.label === "Completed") && !isLive && (
+                      {isDraft && isHost && (
                         <div className="relative group">
                           <Link
                             href={`/${workspaceSlug?.toString()}/meetings/update-meeting/${meeting?.id}`}
                             className=" rounded hover:bg-gray-700"
                           >
-                            <PencilIcon size={18} />
+                            <SquarePen size={18} />
                           </Link>
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
                             Edit meeting
                           </div>
                         </div>
                       )}
-                      {/* View Details */}
+
+                      {/* View meeting */}
                       <div className="relative group">
                         <Link
                           href={`/${workspaceSlug?.toString()}/meetings/meeting-details/${meeting?.id}`}
@@ -207,62 +251,3 @@ const MeetingCardList = observer(() => {
 });
 
 export default MeetingCardList;
-
-export const formatDate = (isoDate: string) =>
-  new Intl.DateTimeFormat("en-US", {
-    dateStyle: "long",
-  }).format(new Date(isoDate));
-
-export const formatTime = (time: string) => {
-  const [hours, minutes] = time.split(":");
-  const date = new Date();
-  date.setHours(+hours, +minutes);
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-  }).format(date);
-};
-
-export function formatDateTime(dateString: string, type: "date" | "time"): string {
-  // Strip 'Z' to treat as local time if needed
-  const localDate = new Date(dateString.replace(/Z$/, ""));
-
-  if (type === "date") {
-    return localDate.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }); // Example: "30 June 2025"
-  }
-
-  if (type === "time") {
-    return localDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }); // Example: "9:00 AM"
-  }
-
-  return "";
-}
-
-export const isMeetingActive = (start_time: string, end_time: string): boolean => {
-  const now = new Date();
-  const parseLocal = (timeStr: string) => {
-    // Remove 'Z' and treat as local
-    return new Date(timeStr.replace(/Z$/, ""));
-  };
-  const start = parseLocal(start_time);
-  const end = parseLocal(end_time);
-  // console.log("Now     :", now.toString());
-  // console.log("Start   :", start.toString());
-  // console.log("End     :", end.toString())
-  return now >= start && now <= end;
-};
-
-// const active = isMeetingActive("2025-07-18T13:45:00Z", "2025-07-18T16:45:00Z");
-// if (active) {
-//   console.log("Meeting is active now");
-// } else {
-//   console.log("Meeting is not active");
-// }

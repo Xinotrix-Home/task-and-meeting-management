@@ -93,13 +93,13 @@ export const SubIssuesListRoot: React.FC<Props> = observer((props) => {
         <SectionEmptyState
           title={
             !isSubWorkItems
-              ? "You don't have work items that match the filters you've applied."
-              : "You don't have sub-work items that match the filters you've applied."
+              ? "You don't have tasks that match the filters you've applied."
+              : "You don't have sub-tasks that match the filters you've applied."
           }
           description={
             !isSubWorkItems
-              ? "To see all work items, clear all applied filters."
-              : "To see all sub-work items, clear all applied filters."
+              ? "To see all tasks, clear all applied filters."
+              : "To see all sub-tasks, clear all applied filters."
           }
           icon={<ListFilter />}
           customClassName={storeType !== EIssuesStoreType.EPIC ? "border-none" : ""}

@@ -1,7 +1,7 @@
 "use client";
 
-import { FileClock, FilePlus, Trash } from "lucide-react";
 import { useState } from "react";
+import { FileClock, FilePlus, Trash } from "lucide-react";
 
 type ActionItem = {
   name: string;
@@ -203,7 +203,7 @@ export default function MeetingMinutesForm() {
           className="textarea textarea-bordered w-full"
           rows={5}
           placeholder="Write meeting notes, decisions, and summary..."
-        ></textarea>
+        />
       </div>
 
       {/* Action Buttons */}

@@ -15,7 +15,7 @@ const ProjectArchivedIssuesPage = observer(() => {
   const { getProjectById } = useProject();
   // derived values
   const project = projectId ? getProjectById(projectId.toString()) : undefined;
-  const pageTitle = project?.name && `${project?.name} - Archived work items`;
+  const pageTitle = project?.name && `${project?.name} - Archived tasks`;
 
   return (
     <>

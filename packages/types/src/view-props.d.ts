@@ -1,5 +1,6 @@
 import { TIssue } from "./issues/issue";
 
+// export type TIssueLayouts = "spreadsheet" | "kanban";
 export type TIssueLayouts = "list" | "kanban" | "calendar" | "spreadsheet" | "gantt_chart";
 
 export type TIssueGroupByOptions =

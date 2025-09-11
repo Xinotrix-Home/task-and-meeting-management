@@ -159,19 +159,19 @@ export class ProjectInboxStore implements IProjectInboxStore {
 
     return this.currentTab === EInboxIssueCurrentTab.OPEN
       ? this.inboxIssueIds.filter((id) => {
-          if (appliedFilters.length == 2) return true;
-          if (appliedFilters[0] === EInboxIssueStatus.SNOOZED)
-            return (
-              this.inboxIssues[id].status === EInboxIssueStatus.SNOOZED &&
-              currentTime < new Date(this.inboxIssues[id].snoozed_till!).getTime()
-            );
-          if (appliedFilters[0] === EInboxIssueStatus.PENDING)
-            return (
-              appliedFilters.includes(this.inboxIssues[id].status) ||
-              (this.inboxIssues[id].status === EInboxIssueStatus.SNOOZED &&
-                currentTime > new Date(this.inboxIssues[id].snoozed_till!).getTime())
-            );
-        })
+        if (appliedFilters.length == 2) return true;
+        if (appliedFilters[0] === EInboxIssueStatus.SNOOZED)
+          return (
+            this.inboxIssues[id].status === EInboxIssueStatus.SNOOZED &&
+            currentTime < new Date(this.inboxIssues[id].snoozed_till!).getTime()
+          );
+        if (appliedFilters[0] === EInboxIssueStatus.PENDING)
+          return (
+            appliedFilters.includes(this.inboxIssues[id].status) ||
+            (this.inboxIssues[id].status === EInboxIssueStatus.SNOOZED &&
+              currentTime > new Date(this.inboxIssues[id].snoozed_till!).getTime())
+          );
+      })
       : this.inboxIssueIds.filter((id) => appliedFilters.includes(this.inboxIssues[id].status));
   }
 
@@ -357,7 +357,7 @@ export class ProjectInboxStore implements IProjectInboxStore {
       console.error("Error fetching the intake issues", error);
       this.loader = undefined;
       this.error = {
-        message: "Error fetching the intake work items please try again later.",
+        message: "Error fetching the intake tasks please try again later.",
         status: "init-error",
       };
       throw error;
@@ -397,7 +397,7 @@ export class ProjectInboxStore implements IProjectInboxStore {
     } catch (error) {
       console.error("Error fetching the intake issues", error);
       this.error = {
-        message: "Error fetching the paginated intake work items please try again later.",
+        message: "Error fetching the paginated intake tasks please try again later.",
         status: "pagination-error",
       };
       throw error;

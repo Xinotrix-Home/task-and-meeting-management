@@ -1,4 +1,4 @@
-import { BarChart2, Briefcase, CalendarDays, Home, Inbox, Layers, PenSquare } from "lucide-react";
+import { BarChart2, Briefcase, CalendarDays, Home, Inbox, Layers, PenSquare, Users } from "lucide-react";
 import { ArchiveIcon, ContrastIcon, UserActivityIcon } from "@plane/ui";
 import { cn } from "@plane/utils";
 
@@ -10,8 +10,8 @@ export const getSidebarNavigationItemIcon = (key: string, className: string = ""
       return <Inbox className={cn("size-4 flex-shrink-0", className)} />;
     case "projects":
       return <Briefcase className={cn("size-4 flex-shrink-0", className)} />;
-    case "views":
-      return <Layers className={cn("size-4 flex-shrink-0", className)} />;
+    // case "views":
+    //   return <Layers className={cn("size-4 flex-shrink-0", className)} />;
     case "active_cycles":
       return <ContrastIcon className={cn("size-4 flex-shrink-0", className)} />;
     case "analytics":
@@ -22,7 +22,11 @@ export const getSidebarNavigationItemIcon = (key: string, className: string = ""
       return <PenSquare className={cn("size-4 flex-shrink-0", className)} />;
     case "archives":
       return <ArchiveIcon className={cn("size-4 flex-shrink-0", className)} />;
-    case "meetings": // ✅ ADD THIS
+    case "meetings":
       return <CalendarDays className={cn("size-4 flex-shrink-0", className)} />;
+    case "tasks":
+      return <Layers className={cn("size-4 flex-shrink-0", className)} />;
+    case "organogram":
+      return <Users className={cn("size-4 flex-shrink-0", className)} />;
   }
 };
