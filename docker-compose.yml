@@ -25,6 +25,8 @@ services:
     depends_on:
       - api
       - web
+    ports:
+      - "3001:3000"
 
   space:
     container_name: space
@@ -38,6 +40,8 @@ services:
     depends_on:
       - api
       - web
+    ports:
+      - "3002:3000"
 
   api:
     container_name: api
@@ -47,6 +51,8 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    volumes:
+      - ./apiserver:/code
     command: ./bin/docker-entrypoint-api.sh
     env_file:
       - ./apiserver/.env
@@ -118,9 +124,9 @@ services:
     container_name: plane-db
     image: postgres:15.7-alpine
     restart: always
-    command: postgres -c 'max_connections=1000'
+    command: postgres -c 'max_connections=200' -c 'shared_buffers=128MB' -c 'work_mem=4MB' -c 'maintenance_work_mem=64MB'
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_prod:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
@@ -130,6 +136,10 @@ services:
       PGDATA: /var/lib/postgresql/data
     ports:
       - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   plane-redis:
     container_name: plane-redis
@@ -187,6 +197,7 @@ services:
 
 volumes:
   pgdata:
+  pgdata_prod:
   redisdata:
   uploads:
   rabbitmq_data:
