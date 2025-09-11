@@ -37,11 +37,11 @@ class WorkspaceMeetingViewSet(BaseViewSet):
 
         # meeting_add_participant_email.delay()
         STATUS_LABELS = {
+            "draft": "Draft",
             "upcoming": "Upcoming",
             "completed": "Completed",
-            "draft": "Draft",
+            "live": "Live",
             "cancelled": "Cancelled",
-            "submitted": "Submitted",
         }
         queryset = self.get_queryset()
 
@@ -81,6 +81,7 @@ class WorkspaceMeetingViewSet(BaseViewSet):
                     MeetingParticipant(meeting_id=serializer.data.get("id", None), user_id=user_id) for user_id in participants_ids
                 ])
 
+                meeting = Meeting.objects.get(id=serializer.data["id"])
                 # Use serializer to create agendas
                 for agenda_data in agendas_data:
                     assignees = agenda_data.pop("assignees", [])
@@ -88,10 +89,15 @@ class WorkspaceMeetingViewSet(BaseViewSet):
 
                     print("agenda_data", agenda_data)
                     # MeetingAgendaSerializer().create({**agenda_data, "meeting_id": serializer.data.get("id", None), "workspace": workspace})
-                    agenda = MeetingAgenda.objects.create(**agenda_data, meeting_id=serializer.data.get("id", None))
 
+                    # Create agenda properly
+                    agenda = MeetingAgenda.objects.create(
+                        meeting=meeting,
+                        workspace=workspace,
+                        **agenda_data
+                    )
                     AgendaAssignee.objects.bulk_create([
-                        AgendaAssignee(agenda=agenda, user_id=user) for user in assignees
+                        AgendaAssignee(agenda=agenda, user_id=user_id) for user_id in assignees
                     ])
 
             meeting_participants = MeetingParticipant.objects.filter(

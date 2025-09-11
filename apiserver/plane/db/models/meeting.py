@@ -12,8 +12,9 @@ from plane.db.models import BaseModel
 class Meeting(BaseModel):
     STATUS_CHOICES = (
         ("draft", "Draft"),
-        ("submitted", "Submitted"),
+        ("upcoming", "Upcoming"),
         ("completed", "Completed"),
+        ("live", "Live"),
         ("cancelled", "Cancelled"),
     )
     workspace = models.ForeignKey(
