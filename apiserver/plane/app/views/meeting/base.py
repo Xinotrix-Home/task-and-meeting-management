@@ -65,61 +65,57 @@ class WorkspaceMeetingViewSet(BaseViewSet):
     def create(self, request, slug):
         with transaction.atomic():
             try:
-                workspace = Workspace.objects.get(slug=slug)
-            except Workspace.DoesNotExist:
-                return Response({"detail": "Workspace not found."}, status=status.HTTP_404_NOT_FOUND)
+                if not (workspace:=Workspace.objects.filter(slug=slug).first()):
+                    return Response({"detail": "Workspace not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            participants_ids = request.data.pop("participants", [])
-            agendas_data = request.data.pop("agendas", [])
+                participants_ids = request.data.pop("participants", [])
+                agendas_data = request.data.pop("agendas", [])
 
-            serializer = self.serializer_class(data=request.data, context={"request": request})
-            if serializer.is_valid():
-                serializer.save(workspace=workspace, created_by=request.user)
+                serializer = self.serializer_class(data=request.data, context={"request": request})
+                if not serializer.is_valid():
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                instance = serializer.save(workspace=workspace, created_by=request.user)
 
                 # Bulk create participants
                 MeetingParticipant.objects.bulk_create([
-                    MeetingParticipant(meeting_id=serializer.data.get("id", None), user_id=user_id) for user_id in participants_ids
+                    MeetingParticipant(meeting_id=instance.id, user_id=user_id) for user_id in participants_ids
                 ])
 
-                meeting = Meeting.objects.get(id=serializer.data["id"])
                 # Use serializer to create agendas
                 for agenda_data in agendas_data:
                     assignees = agenda_data.pop("assignees", [])
                     issues = agenda_data.pop("issues", [])
 
-                    print("agenda_data", agenda_data)
-                    # MeetingAgendaSerializer().create({**agenda_data, "meeting_id": serializer.data.get("id", None), "workspace": workspace})
-
                     # Create agenda properly
                     agenda = MeetingAgenda.objects.create(
-                        meeting=meeting,
-                        workspace=workspace,
+                        meeting=instance,
                         **agenda_data
                     )
                     AgendaAssignee.objects.bulk_create([
                         AgendaAssignee(agenda=agenda, user_id=user_id) for user_id in assignees
                     ])
 
-            meeting_participants = MeetingParticipant.objects.filter(
-                meeting_id=serializer.data.get("id", None)
-            )
+                if serializer.validated_data.get("status") == "submitted":
+                    meeting_participants = MeetingParticipant.objects.filter(meeting_id=instance.id).values_list(
+                        "user_id", flat=True)
 
+                    [
+                        meeting_add_participant_email(
+                            base_host(request=request, is_app=True),
+                            user_id,
+                            request.user.id,
+                        )
+                        for user_id in meeting_participants
+                    ]
 
-            if serializer.data.get("status", None) == "submitted":
-                print(f"Meeting invite email task queued for {meeting_participants}")
-                [
-                    meeting_add_participant_email(
-                        base_host(request=request, is_app=True),
-                        meeting_participant.id,
-                        request.user.id,
-                    )
-                    for meeting_participant in meeting_participants
-                ]
+                serializer = MeetingListSerializer(instance)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                print('Exception -->> ', e)
+                # logger.exception(e)
+            return Response({"detail": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            instance = Meeting.objects.get(id=serializer.data.get("id", None))
-            serializer = MeetingListSerializer(instance)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def retrieve(self, request, slug, pk):
