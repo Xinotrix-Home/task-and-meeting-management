@@ -9,6 +9,7 @@ from .issue import urlpatterns as issue_urls
 from .meeting import urlpatterns as meeting_urls
 from .module import urlpatterns as module_urls
 from .notification import urlpatterns as notification_urls
+from .organogram import urlpatterns as organogram_urls
 from .page import urlpatterns as page_urls
 from .project import urlpatterns as project_urls
 from .search import urlpatterns as search_urls
@@ -30,6 +31,7 @@ urlpatterns = [
     *meeting_urls,
     *module_urls,
     *notification_urls,
+    *organogram_urls,
     *page_urls,
     *project_urls,
     *search_urls,
