@@ -1,168 +1,26 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronRight, Crown, MoreVertical, User, UserRound } from "lucide-react";
+import { ChevronDown, ChevronRight, Crown, Loader2, MoreVertical, User, UserRound } from "lucide-react";
+import { useParams } from "next/navigation";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import useSWR from "swr";
+// helpers
+import { API_BASE_URL } from "@/helpers/common.helper";
+// services
+import { IOrganogramPosition, OrganogramService } from "@/services/organogram";
+import { WorkspaceService } from "@/services/workspace.service";
 
-// Enhanced data structure with proper hierarchical IDs
-const organizationData = [
-  {
-    id: "1000",
-    level: 0,
-    position: "Managing Director",
-    assignedMembers: ["AKM Hamidul Haq"],
-    authorityType: "Head",
-    userRole: "Super Admin",
-    parentId: null,
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1100",
-    level: 1,
-    position: "Board Director - A",
-    assignedMembers: ["MD. Satuuddin"],
-    authorityType: "Line Manager",
-    userRole: "General Admin",
-    parentId: "1000",
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1110",
-    level: 2,
-    position: "CEO",
-    assignedMembers: ["Rahul Amin"],
-    authorityType: "Head",
-    userRole: "Head",
-    parentId: "1100",
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1111",
-    level: 3,
-    position: "Head of Product",
-    assignedMembers: ["Abbas Uddin"],
-    authorityType: "Head",
-    userRole: "Head",
-    parentId: "1110",
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1111.1",
-    level: 4,
-    position: "Development Lead",
-    assignedMembers: [],
-    authorityType: "None",
-    userRole: "Manager",
-    parentId: "1111",
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1111.1.1",
-    level: 5,
-    position: "Sr. Developer",
-    assignedMembers: ["Saiful Islam", "Hossain Ahmed", "Khalil Rahman"],
-    authorityType: "None",
-    userRole: "General Dev",
-    parentId: "1111.1",
-    hasChildren: false,
-    isExpanded: false,
-  },
-  {
-    id: "1111.1.2",
-    level: 5,
-    position: "Jr. Developer",
-    assignedMembers: ["Dhiresh Kumar", "Kabir Hassan"],
-    authorityType: "None",
-    userRole: "General Dev",
-    parentId: "1111.1",
-    hasChildren: false,
-    isExpanded: false,
-  },
-  {
-    id: "1111.2",
-    level: 4,
-    position: "Sr. UI/UX Designer",
-    assignedMembers: ["Farhan Ahmed"],
-    authorityType: "Line Manager",
-    userRole: "Manager",
-    parentId: "1111",
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1111.2.1",
-    level: 5,
-    position: "Assistant UI/UX Designer",
-    assignedMembers: ["Liton Dash"],
-    authorityType: "None",
-    userRole: "General User",
-    parentId: "1111.2",
-    hasChildren: false,
-    isExpanded: false,
-  },
-  {
-    id: "1112",
-    level: 3,
-    position: "Head of HR",
-    assignedMembers: ["Samiul Aman"],
-    authorityType: "Head",
-    userRole: "Head",
-    parentId: "1110",
-    hasChildren: true,
-    isExpanded: true,
-  },
-  {
-    id: "1112.1",
-    level: 4,
-    position: "Recruitment Officer",
-    assignedMembers: ["Rafsana Jahan"],
-    authorityType: "None",
-    userRole: "Manager",
-    parentId: "1112",
-    hasChildren: false,
-    isExpanded: false,
-  },
-  {
-    id: "1200",
-    level: 1,
-    position: "Board Director - B",
-    assignedMembers: ["Mirja Ahmed"],
-    authorityType: "Line Manager",
-    userRole: "General Admin",
-    parentId: "1000",
-    hasChildren: false,
-    isExpanded: false,
-  },
-];
-
-// Available users for assignment
-const availableUsers = [
-  "John Doe",
-  "Jane Smith",
-  "Mike Johnson",
-  "Sarah Wilson",
-  "David Brown",
-  "Emily Davis",
-  "Chris Miller",
-  "Lisa Anderson",
-  "Tom Wilson",
-  "Amy Taylor",
-];
-
-const getIndentClass = (level: number) =>
-  ({
-    0: "pl-0",
-    1: "pl-6",
-    2: "pl-12",
-    3: "pl-18",
-    4: "pl-24",
-    5: "pl-30",
-    6: "pl-36",
-  })[level] || "pl-0";
+interface PositionNode {
+  id: string;
+  level: number;
+  position: string;
+  assignedMembers: string[];
+  authorityType: "None" | "Head" | "Line Manager";
+  userRole: string;
+  parentId: string | null;
+  hasChildren: boolean;
+  isExpanded: boolean;
+}
 
 interface ContextMenuPosition {
   x: number;
@@ -170,17 +28,108 @@ interface ContextMenuPosition {
   nodeId: string;
 }
 
-export default function OrganogramTree() {
-  const [data, setData] = useState(organizationData);
+const organogramService = new OrganogramService();
+const workspaceService = new WorkspaceService(API_BASE_URL);
+
+// Transform API tree response to flat list with levels
+const transformTreeToFlatList = (
+  tree: IOrganogramPosition[],
+  level: number = 0,
+  parentId: string | null = null
+): PositionNode[] => {
+  const result: PositionNode[] = [];
+
+  tree.forEach((position) => {
+    const assignedMembers =
+      position.assigned_users?.map(
+        (user: { first_name?: string; last_name?: string; email?: string }) =>
+          `${user.first_name || ""} ${user.last_name || ""}`.trim() || user.email || ""
+      ) || [];
+
+    const authorityTypeMap: Record<string, "None" | "Head" | "Line Manager"> = {
+      none: "None",
+      head: "Head",
+      line_manager: "Line Manager",
+    };
+
+    const node: PositionNode = {
+      id: position.id,
+      level,
+      position: position.name,
+      assignedMembers,
+      authorityType: authorityTypeMap[position.authority] || "None",
+      userRole: position.authority === "head" ? "Head" : position.authority === "line_manager" ? "Manager" : "Member",
+      parentId,
+      hasChildren: (position.children?.length || 0) > 0,
+      isExpanded: true,
+    };
+
+    result.push(node);
+
+    if (position.children && position.children.length > 0) {
+      const children = transformTreeToFlatList(position.children, level + 1, position.id);
+      result.push(...children);
+    }
+  });
+
+  return result;
+};
+
+const getIndentClass = (level: number) => {
+  const spacingMap: Record<number, string> = {
+    0: "pl-0",
+    1: "pl-6",
+    2: "pl-12",
+    3: "pl-[72px]",
+    4: "pl-[96px]",
+    5: "pl-[120px]",
+    6: "pl-[144px]",
+  };
+  return spacingMap[level] || `pl-[${level * 24}px]`;
+};
+
+export default function OrganogramTable() {
+  const { workspaceSlug } = useParams();
+  const [data, setData] = useState<PositionNode[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [newPosition, setNewPosition] = useState({ name: "", authority: "None" });
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedNode, setSelectedNode] = useState<PositionNode | null>(null);
+  const [newPosition, setNewPosition] = useState({ name: "", authority: "none" as "none" | "head" | "line_manager" });
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  // Fetch organogram tree
+  const {
+    data: treeData,
+    error: treeError,
+    mutate: refetchTree,
+  } = useSWR(workspaceSlug ? `organogram-tree-${workspaceSlug}` : null, async () => {
+    try {
+      return await organogramService.getPositionTree(workspaceSlug?.toString() || "");
+    } catch (error) {
+      // Log error for debugging
+      console.error("Error fetching organogram tree:", error);
+      throw error;
+    }
+  });
+
+  // Fetch workspace members
+  const { data: membersData } = useSWR(workspaceSlug ? `workspace-members-${workspaceSlug}` : null, () =>
+    workspaceService.fetchWorkspaceMembers(workspaceSlug?.toString() || "")
+  );
+
+  // Transform tree data to flat list
+  useEffect(() => {
+    if (treeData) {
+      const flatList = transformTreeToFlatList(treeData);
+      setData(flatList);
+    }
+  }, [treeData]);
 
   // Toggle expand/collapse functionality
   const toggleExpand = (nodeId: string) => {
@@ -190,9 +139,9 @@ export default function OrganogramTree() {
   };
 
   // Filter visible nodes based on expand/collapse state
-  const getVisibleNodes = () => {
-    const visibleNodes: any[] = [];
-    const processNode = (node: any, parentExpanded = true) => {
+  const getVisibleNodes = useCallback(() => {
+    const visibleNodes: PositionNode[] = [];
+    const processNode = (node: PositionNode, parentExpanded = true) => {
       if (parentExpanded) {
         visibleNodes.push(node);
         if (node.hasChildren && node.isExpanded) {
@@ -207,10 +156,10 @@ export default function OrganogramTree() {
     rootNodes.forEach((node) => processNode(node));
 
     return visibleNodes;
-  };
+  }, [data]);
 
   // Handle right-click context menu
-  const handleRightClick = (e: React.MouseEvent, node: any) => {
+  const handleRightClick = (e: React.MouseEvent, node: PositionNode) => {
     e.preventDefault();
     setSelectedNode(node);
     setContextMenu({
@@ -235,12 +184,27 @@ export default function OrganogramTree() {
   // Handle modal actions
   const handleAddPosition = () => {
     setContextMenu(null);
+    setNewPosition({ name: "", authority: "none" });
     setShowAddModal(true);
   };
 
   const handleEditMember = () => {
+    if (!selectedNode) return;
     setContextMenu(null);
-    setSelectedUsers(selectedNode?.assignedMembers || []);
+    // Get user IDs from assigned members
+    const memberIds = selectedNode.assignedMembers
+      .map((name: string) => {
+        const member = membersData?.find(
+          (m: { member?: { first_name?: string; last_name?: string; email?: string; id?: string } }) => {
+            const displayName = `${m.member?.first_name || ""} ${m.member?.last_name || ""}`.trim();
+            return displayName === name || m.member?.email === name;
+          }
+        );
+        return member?.member?.id;
+      })
+      .filter((id): id is string => !!id);
+    setSelectedUserIds(memberIds);
+    setSearchTerm("");
     setShowEditModal(true);
   };
 
@@ -250,13 +214,101 @@ export default function OrganogramTree() {
   };
 
   const handleUpgradeLevel = () => {
-    // Implementation for upgrade level
+    // Implementation for upgrade level - could move position up in hierarchy
     setContextMenu(null);
   };
 
   const handleDowngradeLevel = () => {
-    // Implementation for downgrade level
+    // Implementation for downgrade level - could move position down in hierarchy
     setContextMenu(null);
+  };
+
+  // Save new position
+  const handleSavePosition = async () => {
+    if (!workspaceSlug || !newPosition.name.trim() || !selectedNode) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await organogramService.createPosition(workspaceSlug.toString(), {
+        name: newPosition.name,
+        parent: selectedNode.id,
+        authority: newPosition.authority,
+      });
+
+      setShowAddModal(false);
+      setNewPosition({ name: "", authority: "none" });
+      await refetchTree();
+    } catch (err: unknown) {
+      const error = err as { error?: string; message?: string };
+      setError(error?.error || error?.message || "Failed to create position");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Assign/Unassign users
+  const handleAssignMembers = async () => {
+    if (!workspaceSlug || !selectedNode) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const currentUserIds = selectedNode.assignedMembers
+        .map((name: string) => {
+          const member = membersData?.find(
+            (m: { member?: { first_name?: string; last_name?: string; email?: string; id?: string } }) => {
+              const displayName = `${m.member?.first_name || ""} ${m.member?.last_name || ""}`.trim();
+              return displayName === name || m.member?.email === name;
+            }
+          );
+          return member?.member?.id;
+        })
+        .filter((id): id is string => !!id);
+
+      // Unassign users that are no longer selected
+      const usersToUnassign = currentUserIds.filter((id) => !selectedUserIds.includes(id));
+      for (const userId of usersToUnassign) {
+        await organogramService.unassignUser(workspaceSlug.toString(), selectedNode.id, { user_id: userId });
+      }
+
+      // Assign new users
+      const usersToAssign = selectedUserIds.filter((id) => !currentUserIds.includes(id));
+      for (const userId of usersToAssign) {
+        await organogramService.assignUser(workspaceSlug.toString(), selectedNode.id, { user_id: userId });
+      }
+
+      setShowEditModal(false);
+      setSelectedUserIds([]);
+      await refetchTree();
+    } catch (err: unknown) {
+      const error = err as { error?: string; message?: string };
+      setError(error?.error || error?.message || "Failed to assign members");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Delete position
+  const handleDeletePositionConfirm = async () => {
+    if (!workspaceSlug || !selectedNode) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await organogramService.deletePosition(workspaceSlug.toString(), selectedNode.id);
+      setShowDeleteModal(false);
+      setSelectedNode(null);
+      await refetchTree();
+    } catch (err: unknown) {
+      const error = err as { error?: string; message?: string };
+      setError(error?.error || error?.message || "Failed to delete position");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Authority badge styling
@@ -282,32 +334,119 @@ export default function OrganogramTree() {
     }
   };
 
+  const availableUsers =
+    membersData?.map(
+      (member: {
+        member?: { id?: string; display_name?: string; first_name?: string; last_name?: string; email?: string };
+      }) => ({
+        id: member.member?.id || "",
+        name:
+          member.member?.display_name ||
+          `${member.member?.first_name || ""} ${member.member?.last_name || ""}`.trim() ||
+          member.member?.email ||
+          "",
+        email: member.member?.email || "",
+      })
+    ) || [];
+
+  const filteredUsers = availableUsers.filter(
+    (user: { name: string; email: string }) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Helper function to extract error message
+  const getErrorMessage = (error: unknown): string => {
+    if (!error) return "Unknown error";
+    if (typeof error === "string") return error;
+    if (error instanceof Error) return error.message;
+    if (typeof error === "object") {
+      const errObj = error as Record<string, unknown>;
+      if (errObj.message && typeof errObj.message === "string") return errObj.message;
+      if (errObj.error && typeof errObj.error === "string") return errObj.error;
+      if (Array.isArray(errObj.errors)) {
+        return errObj.errors.map((e: unknown) => (typeof e === "string" ? e : JSON.stringify(e))).join(", ");
+      }
+      // Try to stringify the error object
+      try {
+        return JSON.stringify(error);
+      } catch {
+        return "Unknown error";
+      }
+    }
+    return "Unknown error";
+  };
+
+  if (treeError) {
+    const errorMessage = getErrorMessage(treeError);
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="space-y-2">
+          <p className="text-red-600 font-semibold">Error loading organogram</p>
+          <p className="text-sm text-red-500">{errorMessage}</p>
+          <button
+            onClick={() => refetchTree()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!treeData) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-gray-900 text-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-400 p-4 m-4">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
           {/* Header */}
-          <thead className="bg-gray-900 text-white border-b border-gray-200">
+          <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium   uppercase tracking-wider w-16">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium   uppercase tracking-wider">Positions</th>
-              <th className="px-6 py-3 text-left text-xs font-medium   uppercase tracking-wider">Authority</th>
-              <th className="px-6 py-3 text-center text-xs font-medium   uppercase tracking-wider w-20">Members</th>
-              <th className="px-6 py-3 text-left text-xs font-medium   uppercase tracking-wider w-32">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-16">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Positions
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Authority
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
+                Members
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
+                Role
+              </th>
             </tr>
           </thead>
 
           {/* Body */}
-          <tbody className="bg-gray-900 divide-y divide-gray-200">
-            {getVisibleNodes().map((node, index) => (
+          <tbody className="bg-white divide-y divide-gray-200">
+            {getVisibleNodes().map((node) => (
               <tr
                 key={node.id}
-                className="hover:bg-gray-800 transition-colors cursor-pointer group"
+                className="hover:bg-gray-50 transition-colors cursor-pointer group"
                 onContextMenu={(e) => handleRightClick(e, node)}
               >
                 {/* ID Column */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-white">{node.id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                  {node.id.slice(0, 8)}...
+                </td>
 
                 {/* Positions Column */}
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -315,8 +454,8 @@ export default function OrganogramTree() {
                     {/* Hierarchy Lines */}
                     {node.level > 0 && (
                       <div className="flex items-center mr-3">
-                        <div className="w-4 h-px bg-gray-300"> </div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full border border-white"> </div>
+                        <div className="w-4 h-px bg-gray-300" />
+                        <div className="w-2 h-2 bg-gray-400 rounded-full border border-white" />
                       </div>
                     )}
                     {/* Expand/Collapse Button */}
@@ -335,9 +474,8 @@ export default function OrganogramTree() {
                         )}
                       </button>
                     )}
-                    &quot;
                     {/* Position Name */}
-                    <span className="text-sm font-medium text-white">{node.position}</span>
+                    <span className="text-sm font-medium text-gray-900">{node.position}</span>
                     {/* Actions Button (appears on hover) */}
                     <button
                       className="ml-2 p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 rounded transition-all"
@@ -352,10 +490,10 @@ export default function OrganogramTree() {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex flex-wrap gap-1">
                     {node.assignedMembers.length > 0 ? (
-                      node.assignedMembers.map((user: any, idx: any) => (
+                      node.assignedMembers.map((user, idx) => (
                         <div key={idx} className="flex items-center space-x-1">
                           <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getAuthorityBadge(node.authorityType)}`}
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getAuthorityBadge(node.authorityType)}`}
                           >
                             {getAuthorityIcon(node.authorityType)}
                             <span className="ml-1">{user}</span>
@@ -394,47 +532,47 @@ export default function OrganogramTree() {
       {contextMenu && (
         <div
           ref={contextMenuRef}
-          className="fixed bg-gray-900 border border-gray-200 rounded-lg shadow-lg py-2 z-50 min-w-48"
+          className="fixed bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50 min-w-48"
           style={{
             left: `${contextMenu.x}px`,
             top: `${contextMenu.y}px`,
           }}
         >
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
             onClick={handleAddPosition}
           >
             <span className="text-green-600">➕</span>
             Add New Position
           </button>
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
             onClick={handleEditMember}
           >
-            <User className="text-blue-600" />
+            <User className="w-4 h-4 text-blue-600" />
             Edit Member
           </button>
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
             onClick={handleUpgradeLevel}
           >
             <span className="text-purple-600">⬆️</span>
             Upgrade Level
           </button>
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
             onClick={handleDowngradeLevel}
           >
             <span className="text-orange-600">⬇️</span>
             Downgrade Level
           </button>
-          <hr className="my-1" />
+          <hr className="my-1 border-gray-200" />
           <button
             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 text-red-600 flex items-center gap-2"
             onClick={handleDeletePosition}
           >
             <span>🗑️</span>
-            Delete Level
+            Delete Position
           </button>
         </div>
       )}
@@ -442,8 +580,8 @@ export default function OrganogramTree() {
       {/* Add New Position Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-6 rounded-lg w-96 shadow-xl">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Add New Position</h2>
+          <div className="bg-white p-6 rounded-lg w-96 shadow-xl">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Add New Position</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Position Name</label>
@@ -452,19 +590,21 @@ export default function OrganogramTree() {
                   value={newPosition.name}
                   onChange={(e) => setNewPosition({ ...newPosition, name: e.target.value })}
                   placeholder="Enter position name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Authority</label>
                 <select
                   value={newPosition.authority}
-                  onChange={(e) => setNewPosition({ ...newPosition, authority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) =>
+                    setNewPosition({ ...newPosition, authority: e.target.value as "none" | "head" | "line_manager" })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 >
-                  <option value="None">None</option>
-                  <option value="Head">Head</option>
-                  <option value="Line Manager">Line Manager</option>
+                  <option value="none">None</option>
+                  <option value="head">Head</option>
+                  <option value="line_manager">Line Manager</option>
                 </select>
               </div>
             </div>
@@ -472,13 +612,16 @@ export default function OrganogramTree() {
               <button
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
                 onClick={() => setShowAddModal(false)}
+                disabled={isLoading}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                disabled={!newPosition.name.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                disabled={!newPosition.name.trim() || isLoading}
+                onClick={handleSavePosition}
               >
+                {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Save Position
               </button>
             </div>
@@ -489,8 +632,8 @@ export default function OrganogramTree() {
       {/* Edit Member Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-6 rounded-lg w-96 shadow-xl">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Edit Member Assignment</h2>
+          <div className="bg-white p-6 rounded-lg w-96 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Edit Member Assignment</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -502,7 +645,7 @@ export default function OrganogramTree() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search users..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   />
                 </div>
               </div>
@@ -519,49 +662,55 @@ export default function OrganogramTree() {
 
               {/* User Selection */}
               <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md">
-                {availableUsers
-                  .filter((user) => user.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .map((user) => (
-                    <label key={user} className="flex items-center p-2 hover:bg-gray-50 cursor-pointer">
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user: { id: string; name: string }) => (
+                    <label key={user.id} className="flex items-center p-2 hover:bg-gray-50 cursor-pointer">
                       <input
                         type={selectedNode?.authorityType !== "None" ? "radio" : "checkbox"}
                         name={selectedNode?.authorityType !== "None" ? "singleUser" : undefined}
-                        checked={selectedUsers.includes(user)}
+                        checked={selectedUserIds.includes(user.id)}
                         onChange={(e) => {
                           if (selectedNode?.authorityType !== "None") {
-                            setSelectedUsers(e.target.checked ? [user] : []);
+                            setSelectedUserIds(e.target.checked ? [user.id] : []);
                           } else {
-                            setSelectedUsers((prev) =>
-                              e.target.checked ? [...prev, user] : prev.filter((u) => u !== user)
+                            setSelectedUserIds((prev) =>
+                              e.target.checked ? [...prev, user.id] : prev.filter((id) => id !== user.id)
                             );
                           }
                         }}
                         className="mr-2"
                       />
-                      <span className="text-sm">{user}</span>
+                      <span className="text-sm text-gray-900">{user.name}</span>
                     </label>
-                  ))}
+                  ))
+                ) : (
+                  <div className="p-2 text-sm text-gray-500">No users found</div>
+                )}
               </div>
 
               {/* Currently Selected */}
-              {selectedUsers.length > 0 && (
+              {selectedUserIds.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Selected Users:</label>
                   <div className="flex flex-wrap gap-1">
-                    {selectedUsers.map((user) => (
-                      <span
-                        key={user}
-                        className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-                      >
-                        {user}
-                        <button
-                          onClick={() => setSelectedUsers((prev) => prev.filter((u) => u !== user))}
-                          className="ml-1 text-blue-600 hover:text-blue-800"
+                    {selectedUserIds.map((userId: string) => {
+                      const user = availableUsers.find((u: { id: string; name: string }) => u.id === userId);
+                      if (!user) return null;
+                      return (
+                        <span
+                          key={userId}
+                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
                         >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                          {user.name}
+                          <button
+                            onClick={() => setSelectedUserIds((prev) => prev.filter((id) => id !== userId))}
+                            className="ml-1 text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -570,10 +719,18 @@ export default function OrganogramTree() {
               <button
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
                 onClick={() => setShowEditModal(false)}
+                disabled={isLoading}
               >
                 Cancel
               </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Assign Members</button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                onClick={handleAssignMembers}
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                Assign Members
+              </button>
             </div>
           </div>
         </div>
@@ -582,7 +739,7 @@ export default function OrganogramTree() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-6 rounded-lg w-96 shadow-xl">
+          <div className="bg-white p-6 rounded-lg w-96 shadow-xl">
             <h2 className="text-xl font-bold mb-4 text-red-600">Confirm Delete</h2>
             <div className="space-y-4">
               <p className="text-gray-700">
@@ -600,7 +757,7 @@ export default function OrganogramTree() {
                   </div>
                 )}
 
-                {selectedNode?.assignedMembers?.length > 0 && (
+                {selectedNode && selectedNode.assignedMembers?.length > 0 && (
                   <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                     <p className="text-sm text-yellow-800">
                       👥 <strong>Note:</strong> This position has {selectedNode.assignedMembers.length} assigned
@@ -616,10 +773,18 @@ export default function OrganogramTree() {
               <button
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
                 onClick={() => setShowDeleteModal(false)}
+                disabled={isLoading}
               >
                 Cancel
               </button>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Delete Position</button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                onClick={handleDeletePositionConfirm}
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                Delete Position
+              </button>
             </div>
           </div>
         </div>
