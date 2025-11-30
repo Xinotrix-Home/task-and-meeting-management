@@ -15,6 +15,7 @@ import { IProjectEstimateStore, ProjectEstimateStore } from "./estimates/project
 import { EventTrackerStore, IEventTrackerStore } from "./event-tracker.store";
 import { FavoriteStore, IFavoriteStore } from "./favorite.store";
 import { MeetingStore, IMeetingStore } from "./meeting/meeting.store";
+import { OrganogramStore, IOrganogramStore } from "./organogram/organogram.store";
 import { GlobalViewStore, IGlobalViewStore } from "./global-view.store";
 import { IProjectInboxStore, ProjectInboxStore } from "./inbox/project-inbox.store";
 import { InstanceStore, IInstanceStore } from "./instance.store";
@@ -65,6 +66,7 @@ export class CoreRootStore {
   workspaceNotification: IWorkspaceNotificationStore;
   favorite: IFavoriteStore;
   meeting: IMeetingStore;
+  organogram: IOrganogramStore;
   transient: ITransientStore;
   stickyStore: IStickyStore;
   editorAssetStore: IEditorAssetStore;
@@ -95,7 +97,8 @@ export class CoreRootStore {
     this.projectEstimate = new ProjectEstimateStore(this);
     this.workspaceNotification = new WorkspaceNotificationStore(this);
     this.favorite = new FavoriteStore(this);
-    this.meeting = new MeetingStore(this)
+    this.meeting = new MeetingStore(this);
+    this.organogram = new OrganogramStore(this);
     this.transient = new TransientStore();
     this.stickyStore = new StickyStore();
     this.editorAssetStore = new EditorAssetStore();
@@ -130,7 +133,8 @@ export class CoreRootStore {
     this.projectEstimate = new ProjectEstimateStore(this);
     this.workspaceNotification = new WorkspaceNotificationStore(this);
     this.favorite = new FavoriteStore(this);
-    this.meeting = new MeetingStore(this)
+    this.meeting = new MeetingStore(this);
+    this.organogram = new OrganogramStore(this);
     this.transient = new TransientStore();
     this.stickyStore = new StickyStore();
     this.editorAssetStore = new EditorAssetStore();

@@ -1,6 +1,6 @@
 "use client";
 
-import OrganogramTree from "../_components/OrganogramTable";
+import OrganogramTree from "../_components/OrganogramTree";
 
 export default function MeetingDashboard() {
   return (
