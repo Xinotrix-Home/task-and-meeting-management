@@ -1,15 +1,15 @@
 "use client";
 
+import React, { useEffect, useRef, useState } from "react";
+import { observer } from "mobx-react";
+import { useParams } from "next/navigation";
+import useSWR from "swr";
+import { ChevronDown, ChevronRight, Crown, MoreVertical, User, UserRound, Circle } from "lucide-react";
 import { WORKSPACE_MEMBERS } from "@/constants/fetch-keys";
 import { useWorkspace } from "@/hooks/store";
 import { useOrganogram } from "@/hooks/store/use-organogram";
 import { WorkspaceService } from "@/plane-web/services";
 import { IOrganogramPosition } from "@/services/organogram";
-import { ChevronDown, ChevronRight, Crown, MoreVertical, User, UserRound } from "lucide-react";
-import { observer } from "mobx-react";
-import { useParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
 
 const workspaceService = new WorkspaceService();
 
@@ -39,6 +39,52 @@ const formatAuthorityType = (authority: string): string => {
       return "Line Manager";
     default:
       return "None";
+  }
+};
+
+// Helper to determine role based on authority and level
+const getRoleLabel = (authority: string, level: number, hasChildren: boolean, positionName: string): string => {
+  // Super Admin: Level 0 with head authority
+  if (level === 0 && authority === "head") {
+    return "Super Admin";
+  }
+  // General Admin: Level 1 with line_manager authority
+  if (level === 1 && authority === "line_manager") {
+    return "General Admin";
+  }
+  // Head: Any level with head authority (except level 0 which is Super Admin)
+  if (authority === "head") {
+    return "Head";
+  }
+  // Manager: line_manager authority or positions with children
+  if (authority === "line_manager" || hasChildren) {
+    return "Manager";
+  }
+  // General Dev: For development-related positions
+  if (positionName.toLowerCase().includes("developer") || positionName.toLowerCase().includes("dev")) {
+    return "General Dev";
+  }
+  // General User: Default for positions without authority and no children
+  return "General User";
+};
+
+// Helper to get role text color
+const getRoleColor = (role: string): string => {
+  switch (role) {
+    case "Super Admin":
+      return "text-purple-500";
+    case "General Admin":
+      return "text-green-500";
+    case "Head":
+      return "text-blue-500";
+    case "Manager":
+      return "text-pink-500";
+    case "General Dev":
+      return "text-purple-400";
+    case "General User":
+      return "text-cyan-400";
+    default:
+      return "text-custom-text-200";
   }
 };
 
@@ -245,18 +291,6 @@ const OrganogramTree = observer(() => {
     }
   };
 
-  // Authority badge styling
-  const getAuthorityBadge = (authorityType: string) => {
-    switch (authorityType) {
-      case "head":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "line_manager":
-        return "bg-green-100 text-green-800 border-green-200";
-      default:
-        return "bg-gray-100 text-gray-600 border-gray-200";
-    }
-  };
-
   const getAuthorityIcon = (authorityType: string) => {
     switch (authorityType) {
       case "head":
@@ -288,8 +322,8 @@ const OrganogramTree = observer(() => {
 
   if (organogramStore.isLoading && visibleNodes.length === 0) {
     return (
-      <div className="bg-gray-900 text-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-        <p>Loading organogram...</p>
+      <div className="bg-custom-background-100 rounded-lg shadow-sm border border-custom-border-200 p-10 text-center">
+        <p className="text-custom-text-200">Loading organogram...</p>
       </div>
     );
   }
@@ -297,118 +331,200 @@ const OrganogramTree = observer(() => {
   const parentPositionOptions = getParentPositionOptions();
 
   return (
-    <div className="bg-gray-900 text-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-custom-background-100 rounded-lg shadow-sm border border-custom-border-200 overflow-hidden">
       {/* Add Position Button - Top Right */}
-      <div className="flex justify-end p-4 border-b border-gray-200">
+      <div className="flex justify-end p-4 border-b border-custom-border-200 bg-custom-background-100">
         <button
           onClick={() => handleAddPosition(null)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-custom-primary-100 text-white rounded-md hover:bg-custom-primary-200 transition-colors flex items-center gap-2"
         >
           <span>➕</span>
           Add New Position
         </button>
       </div>
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-custom-background-100">
         <table className="w-full">
           {/* Header */}
-          <thead className="bg-gray-900 text-white border-b border-gray-200">
+          <thead className="bg-custom-background-100 border-b border-custom-border-200">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider w-16">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Positions</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Authority</th>
-              <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider w-20">Members</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider w-32">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-custom-text-200 w-16">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-custom-text-200">
+                POSITIONS
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-custom-text-200">
+                AUTHORITY
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-custom-text-200 w-20">
+                MEMBERS
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-custom-text-200 w-32">
+                ROLE
+              </th>
             </tr>
           </thead>
 
           {/* Body */}
-          <tbody className="bg-gray-900 divide-y divide-gray-200">
+          <tbody className="bg-custom-background-100 divide-y divide-custom-border-200">
             {visibleNodes.map((node) => {
-              const hasChildren = (node.children_count || 0) > 0;
+              // Check if node has children by checking both children_count and actual children in store
+              const childrenCount = node.children_count || 0;
+              const hasChildrenInStore = organogramStore.positions.some((pos) => pos.parent === node.id);
+              const hasChildren = childrenCount > 0 || hasChildrenInStore;
               const assignedUsers = node.assigned_users || [];
+              const level = node.level || 0;
+
+              // Check if this is the last child of its parent
+              const isLastChild = (() => {
+                if (level === 0) return true;
+                const siblings = visibleNodes.filter((n) => n.parent === node.parent && (n.level || 0) === level);
+                const sortedSiblings = siblings.sort((a, b) => {
+                  const aIndex = visibleNodes.findIndex((n) => n.id === a.id);
+                  const bIndex = visibleNodes.findIndex((n) => n.id === b.id);
+                  return aIndex - bIndex;
+                });
+                return sortedSiblings[sortedSiblings.length - 1]?.id === node.id;
+              })();
 
               return (
                 <tr
                   key={node.id}
-                  className="hover:bg-gray-800 transition-colors cursor-pointer group"
+                  className="hover:bg-custom-background-90 transition-colors cursor-pointer group relative"
                   onContextMenu={(e) => handleRightClick(e, node)}
                 >
                   {/* ID Column */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-white">{node.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-custom-text-100">{node.id}</td>
 
                   {/* Positions Column */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className={`flex items-center ${getIndentClass(node.level || 0)}`}>
+                  <td className="px-6 py-4 whitespace-nowrap relative">
+                    <div className="flex items-center relative">
                       {/* Hierarchy Lines */}
-                      {(node.level || 0) > 0 && (
-                        <div className="flex items-center mr-3">
-                          <div className="w-4 h-px bg-gray-300"> </div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full border border-white"> </div>
+                      {level > 0 && (
+                        <div className="absolute left-0 top-0 bottom-0 flex">
+                          {Array.from({ length: level }).map((_, idx) => {
+                            const isLastLevel = idx === level - 1;
+                            const shouldDrawVertical = !isLastLevel || !isLastChild;
+
+                            return (
+                              <div key={idx} className="relative" style={{ width: "24px" }}>
+                                {/* Vertical line */}
+                                {shouldDrawVertical && (
+                                  <div
+                                    className="absolute left-1/2 top-0 bottom-0 w-px bg-custom-border-300"
+                                    style={{ transform: "translateX(-50%)" }}
+                                  />
+                                )}
+                                {/* Horizontal connector for last level */}
+                                {isLastLevel && (
+                                  <>
+                                    <div
+                                      className="absolute left-1/2 top-1/2 w-3 h-px bg-custom-border-300"
+                                      style={{ transform: "translateX(-50%) translateY(-50%)" }}
+                                    />
+                                    {/* Corner connector */}
+                                    {!isLastChild && (
+                                      <div
+                                        className="absolute left-1/2 top-1/2 bottom-0 w-px bg-custom-border-300"
+                                        style={{ transform: "translateX(-50%)" }}
+                                      />
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
-                      {/* Expand/Collapse Button */}
-                      {hasChildren && (
-                        <button
-                          className="mr-2 p-1 hover:bg-gray-200 rounded transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExpand(node.id);
-                          }}
-                        >
-                          {node.isExpanded ? (
-                            <ChevronDown className="w-4 h-4 text-gray-600" />
+
+                      <div className={`flex items-center ${getIndentClass(level)} relative z-10`}>
+                        {/* Expand/Collapse Button or Leaf Node Indicator */}
+                        <div className="mr-2 w-4 h-4 flex items-center justify-center">
+                          {hasChildren ? (
+                            <button
+                              className="p-0.5 hover:bg-custom-background-80 rounded transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleExpand(node.id);
+                              }}
+                            >
+                              {node.isExpanded ? (
+                                <ChevronDown className="w-3.5 h-3.5 text-custom-text-300" />
+                              ) : (
+                                <ChevronRight className="w-3.5 h-3.5 text-custom-text-300" />
+                              )}
+                            </button>
                           ) : (
-                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <Circle className="w-2 h-2 text-custom-text-400 fill-current" />
                           )}
+                        </div>
+                        {/* Position Name */}
+                        <span className="text-sm font-medium text-custom-text-100">{node.name}</span>
+                        {/* Actions Button (appears on hover) */}
+                        <button
+                          className="ml-2 p-1 opacity-0 group-hover:opacity-100 hover:bg-custom-background-80 rounded transition-all"
+                          onClick={(e) => handleRightClick(e, node)}
+                        >
+                          <MoreVertical className="w-4 h-4 text-custom-text-400" />
                         </button>
-                      )}
-                      {/* Position Name */}
-                      <span className="text-sm font-medium text-white">{node.name}</span>
-                      {/* Actions Button (appears on hover) */}
-                      <button
-                        className="ml-2 p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 rounded transition-all"
-                        onClick={(e) => handleRightClick(e, node)}
-                      >
-                        <MoreVertical className="w-4 h-4 text-gray-400" />
-                      </button>
+                      </div>
                     </div>
                   </td>
 
                   {/* Authority Column */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       {assignedUsers.length > 0 ? (
-                        assignedUsers.map((user, idx) => (
-                          <div key={idx} className="flex items-center space-x-1">
+                        <>
+                          {assignedUsers.map((user, idx) => (
                             <span
-                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getAuthorityBadge(node.authority)}`}
+                              key={idx}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                node.authority === "head"
+                                  ? "bg-blue-500 text-white"
+                                  : node.authority === "line_manager"
+                                    ? "bg-green-500 text-white"
+                                    : "bg-gray-500 text-white"
+                              }`}
                             >
-                              {getAuthorityIcon(node.authority)}
-                              <span className="ml-1">{getUserDisplayName(user)}</span>
+                              <span
+                                className={
+                                  node.authority === "head"
+                                    ? "text-blue-200"
+                                    : node.authority === "line_manager"
+                                      ? "text-green-200"
+                                      : "text-gray-200"
+                                }
+                              >
+                                {getAuthorityIcon(node.authority)}
+                              </span>
+                              <span className="text-white">{getUserDisplayName(user)}</span>
                             </span>
-                            {node.authority !== "none" && (
-                              <span className="text-xs text-gray-500">{formatAuthorityType(node.authority)}</span>
-                            )}
-                          </div>
-                        ))
+                          ))}
+                          {node.authority !== "none" && (
+                            <span className="text-xs text-custom-text-300">{formatAuthorityType(node.authority)}</span>
+                          )}
+                        </>
                       ) : (
-                        <span className="text-sm text-gray-400 italic">Unassigned</span>
+                        <span className="text-sm text-custom-text-400 italic">Unassigned</span>
                       )}
                     </div>
                   </td>
 
                   {/* Members Count Column */}
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                    <span className="inline-flex items-center justify-center w-8 h-8 text-custom-text-100 text-sm font-medium">
                       {assignedUsers.length}
                     </span>
                   </td>
 
-                  {/* Role Column - Using authority as role for now */}
+                  {/* Role Column */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {formatAuthorityType(node.authority)}
+                    <span
+                      className={`text-sm font-medium ${getRoleColor(getRoleLabel(node.authority, node.level || 0, hasChildren, node.name))}`}
+                    >
+                      {getRoleLabel(node.authority, node.level || 0, hasChildren, node.name)}
                     </span>
                   </td>
                 </tr>
@@ -422,43 +538,43 @@ const OrganogramTree = observer(() => {
       {contextMenu && (
         <div
           ref={contextMenuRef}
-          className="fixed bg-gray-900 border border-gray-200 rounded-lg shadow-lg py-2 z-50 min-w-48"
+          className="fixed bg-custom-background-100 border border-custom-border-200 rounded-lg shadow-lg py-2 z-50 min-w-48"
           style={{
             left: `${contextMenu.x}px`,
             top: `${contextMenu.y}px`,
           }}
         >
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-custom-text-200 hover:bg-custom-background-90 flex items-center gap-2"
             onClick={() => handleAddPosition(selectedNode)}
           >
             <span className="text-green-600">➕</span>
             Add New Position
           </button>
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-custom-text-200 hover:bg-custom-background-90 flex items-center gap-2"
             onClick={handleEditMember}
           >
-            <User className="text-blue-600" />
+            <User className="text-custom-primary-100" />
             Edit Member
           </button>
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-custom-text-200 hover:bg-custom-background-90 flex items-center gap-2"
             onClick={handleUpgradeLevel}
           >
             <span className="text-purple-600">⬆️</span>
             Upgrade Level
           </button>
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-custom-text-200 hover:bg-custom-background-90 flex items-center gap-2"
             onClick={handleDowngradeLevel}
           >
             <span className="text-orange-600">⬇️</span>
             Downgrade Level
           </button>
-          <hr className="my-1" />
+          <hr className="my-1 border-custom-border-200" />
           <button
-            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 text-red-600 flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm hover:bg-custom-background-90 text-red-600 flex items-center gap-2"
             onClick={handleDeletePosition}
           >
             <span>🗑️</span>
@@ -470,11 +586,11 @@ const OrganogramTree = observer(() => {
       {/* Add New Position Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-[500px] max-w-[90vw] shadow-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Create New Position</h2>
+          <div className="bg-custom-background-100 p-6 rounded-lg w-[500px] max-w-[90vw] shadow-xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4 text-custom-text-100">Create New Position</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-custom-text-200 mb-1">
                   Position Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -482,14 +598,14 @@ const OrganogramTree = observer(() => {
                   value={newPosition.name}
                   onChange={(e) => setNewPosition({ ...newPosition, name: e.target.value })}
                   placeholder="e.g., Engineering Manager, CEO, etc."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100"
                   autoFocus
                 />
-                <p className="text-xs text-gray-500 mt-1">This name must be unique within the workspace</p>
+                <p className="text-xs text-custom-text-400 mt-1">This name must be unique within the workspace</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Parent Position</label>
+                <label className="block text-sm font-medium text-custom-text-200 mb-1">Parent Position</label>
                 <select
                   value={newPosition.parent || ""}
                   onChange={(e) =>
@@ -498,7 +614,7 @@ const OrganogramTree = observer(() => {
                       parent: e.target.value || null,
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100"
                 >
                   <option value="">None (Root Position)</option>
                   {parentPositionOptions.map((position) => {
@@ -512,19 +628,19 @@ const OrganogramTree = observer(() => {
                     );
                   })}
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-custom-text-400 mt-1">
                   Select a parent position to create a hierarchical structure. Leave empty for root positions.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Authority Type</label>
+                <label className="block text-sm font-medium text-custom-text-200 mb-1">Authority Type</label>
                 <select
                   value={newPosition.authority}
                   onChange={(e) =>
                     setNewPosition({ ...newPosition, authority: e.target.value as "none" | "head" | "line_manager" })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100"
                 >
                   <option value="none">None - Multiple users can be assigned</option>
                   <option value="head">Head - Only one user can be assigned (Leadership position)</option>
@@ -532,26 +648,26 @@ const OrganogramTree = observer(() => {
                     Line Manager - Only one user can be assigned (Management position)
                   </option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-custom-text-400 mt-1">
                   Head and Line Manager positions can only have one user assigned. None positions can have multiple
                   users.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-custom-text-200 mb-1">Description</label>
                 <textarea
                   value={newPosition.description}
                   onChange={(e) => setNewPosition({ ...newPosition, description: e.target.value })}
                   placeholder="Optional description of the position's responsibilities..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 resize-none"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100 resize-none"
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-custom-border-200">
               <button
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-custom-text-300 border border-custom-border-300 rounded-md hover:bg-custom-background-90 transition-colors"
                 onClick={() => {
                   setShowAddModal(false);
                   setNewPosition({ name: "", authority: "none", parent: null, description: "" });
@@ -562,7 +678,7 @@ const OrganogramTree = observer(() => {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-custom-primary-100 text-white rounded-md hover:bg-custom-primary-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 disabled={!newPosition.name.trim() || organogramStore.isLoading}
                 onClick={handleSavePosition}
               >
@@ -576,11 +692,11 @@ const OrganogramTree = observer(() => {
       {/* Edit Member Modal */}
       {showEditModal && selectedNode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-6 rounded-lg w-96 shadow-xl">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Edit Member Assignment</h2>
+          <div className="bg-custom-background-100 p-6 rounded-lg w-96 shadow-xl">
+            <h2 className="text-xl font-bold mb-4 text-custom-text-100">Edit Member Assignment</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-custom-text-200 mb-1">
                   Assign Member(s) to: <span className="font-semibold">{selectedNode.name}</span>
                 </label>
                 <div className="relative">
@@ -589,7 +705,7 @@ const OrganogramTree = observer(() => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search users..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 bg-custom-background-100 text-custom-text-100"
                   />
                 </div>
               </div>
@@ -605,10 +721,10 @@ const OrganogramTree = observer(() => {
               )}
 
               {/* User Selection */}
-              <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md">
+              <div className="max-h-40 overflow-y-auto border border-custom-border-200 rounded-md bg-custom-background-100">
                 {filteredUsers && filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => (
-                    <label key={user.id} className="flex items-center p-2 hover:bg-gray-50 cursor-pointer">
+                    <label key={user.id} className="flex items-center p-2 hover:bg-custom-background-90 cursor-pointer">
                       <input
                         type={selectedNode.authority !== "none" ? "radio" : "checkbox"}
                         name={selectedNode.authority !== "none" ? "singleUser" : undefined}
@@ -624,18 +740,18 @@ const OrganogramTree = observer(() => {
                         }}
                         className="mr-2"
                       />
-                      <span className="text-sm">{user.name}</span>
+                      <span className="text-sm text-custom-text-100">{user.name}</span>
                     </label>
                   ))
                 ) : (
-                  <div className="p-2 text-sm text-gray-500">No users found</div>
+                  <div className="p-2 text-sm text-custom-text-400">No users found</div>
                 )}
               </div>
 
               {/* Currently Selected */}
               {selectedUserIds.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Selected Users:</label>
+                  <label className="block text-sm font-medium text-custom-text-200 mb-1">Selected Users:</label>
                   <div className="flex flex-wrap gap-1">
                     {selectedUserIds.map((userId) => {
                       const user = availableUsers?.find((u) => u.id === userId);
@@ -643,12 +759,12 @@ const OrganogramTree = observer(() => {
                       return (
                         <span
                           key={userId}
-                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                          className="inline-flex items-center px-2 py-1 bg-custom-primary-10 text-custom-primary-100 text-xs rounded-full"
                         >
                           {user.name}
                           <button
                             onClick={() => setSelectedUserIds((prev) => prev.filter((id) => id !== userId))}
-                            className="ml-1 text-blue-600 hover:text-blue-800"
+                            className="ml-1 text-custom-primary-100 hover:text-custom-primary-200"
                           >
                             ×
                           </button>
@@ -661,13 +777,13 @@ const OrganogramTree = observer(() => {
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-custom-text-300 border border-custom-border-300 rounded-md hover:bg-custom-background-90"
                 onClick={() => setShowEditModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 bg-custom-primary-100 text-white rounded-md hover:bg-custom-primary-200 disabled:opacity-50"
                 disabled={organogramStore.isLoading}
                 onClick={handleAssignMembers}
               >
@@ -681,10 +797,10 @@ const OrganogramTree = observer(() => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedNode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-6 rounded-lg w-96 shadow-xl">
+          <div className="bg-custom-background-100 p-6 rounded-lg w-96 shadow-xl">
             <h2 className="text-xl font-bold mb-4 text-red-600">Confirm Delete</h2>
             <div className="space-y-4">
-              <p className="text-gray-700">
+              <p className="text-custom-text-200">
                 Are you sure you want to delete the position:
                 <span className="font-semibold"> &quot;{selectedNode.name}&quot;</span>?
               </p>
@@ -709,11 +825,11 @@ const OrganogramTree = observer(() => {
                 )}
               </div>
 
-              <p className="text-sm text-gray-500">This action cannot be undone.</p>
+              <p className="text-sm text-custom-text-400">This action cannot be undone.</p>
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-custom-text-300 border border-custom-border-300 rounded-md hover:bg-custom-background-90"
                 onClick={() => setShowDeleteModal(false)}
               >
                 Cancel

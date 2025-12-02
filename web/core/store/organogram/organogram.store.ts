@@ -214,7 +214,15 @@ export class OrganogramStore implements IOrganogramStore {
 
         flatPositions.forEach((position) => {
           if (position?.id) {
-            const isExpanded = position.isExpanded || this.expandedNodes.has(position.id);
+            // Preserve expanded state if it exists, otherwise check if it was previously expanded
+            // Root nodes are expanded by default, others are collapsed
+            const isRoot = !position.parent;
+            const isExpanded =
+              position.isExpanded !== undefined
+                ? position.isExpanded
+                : isRoot
+                  ? true
+                  : this.expandedNodes.has(position.id);
             this.positionMap[position.id] = {
               ...position,
               isExpanded,
@@ -537,20 +545,34 @@ export class OrganogramStore implements IOrganogramStore {
     const visibleNodes: IOrganogramPosition[] = [];
 
     const processNode = (node: IOrganogramPosition, parentExpanded = true) => {
+      // Only show node if all ancestors are expanded
       if (parentExpanded) {
         visibleNodes.push(node);
 
-        const hasChildren = (node.children_count || 0) > 0;
+        // Check if node has children (check both children_count and actual children in positions)
+        const childrenCount = node.children_count || 0;
+        const hasChildrenInStore = this.positions.some((pos) => pos.parent === node.id);
+        const hasChildren = childrenCount > 0 || hasChildrenInStore;
+
+        // If node has children and is expanded, process children
         if (hasChildren && node.isExpanded) {
-          const children = this.positions.filter((child) => child.parent === node.id);
+          // Get all children of this node, sorted to maintain order
+          const children = this.positions
+            .filter((child) => child.parent === node.id)
+            .sort((a, b) => {
+              // Sort by ID or name to maintain consistent order
+              return (a.id || "").localeCompare(b.id || "");
+            });
+
+          // Process each child, passing true since we know the parent is expanded
           children.forEach((child) => processNode(child, true));
         }
       }
     };
 
-    // Start with root nodes
+    // Start with root nodes (they have no parent, so parentExpanded is true)
     const rootNodes = this.rootPositions;
-    rootNodes.forEach((node) => processNode(node));
+    rootNodes.forEach((node) => processNode(node, true));
 
     return visibleNodes;
   };
