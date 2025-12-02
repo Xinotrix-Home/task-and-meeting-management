@@ -134,3 +134,12 @@ from .meeting import (
     MeetingSerializer,
     MeetingListSerializer,
 )
+
+from .organogram import (
+    OrganogramPositionSerializer,
+    OrganogramPositionLiteSerializer,
+    UserPositionSerializer,
+    OrganogramPositionTreeSerializer,
+    WorkspaceOrganogramSerializer,
+    OrganogramTreeRootSerializer,
+)

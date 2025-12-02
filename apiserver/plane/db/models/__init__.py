@@ -90,3 +90,9 @@ from .label import Label
 from .device import Device, DeviceSession
 
 from .sticky import Sticky
+
+from .organogram import (
+    OrganogramPosition,
+    UserPosition,
+    WorkspaceOrganogram,
+)
