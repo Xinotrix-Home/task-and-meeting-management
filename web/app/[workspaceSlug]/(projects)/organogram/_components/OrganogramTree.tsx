@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { observer } from "mobx-react";
-import { useParams } from "next/navigation";
-import useSWR from "swr";
-import { ChevronDown, ChevronRight, Crown, MoreVertical, User, UserRound, Circle } from "lucide-react";
 import { WORKSPACE_MEMBERS } from "@/constants/fetch-keys";
 import { useWorkspace } from "@/hooks/store";
 import { useOrganogram } from "@/hooks/store/use-organogram";
 import { WorkspaceService } from "@/plane-web/services";
 import { IOrganogramPosition } from "@/services/organogram";
+import { Button } from "@plane/ui";
+import { ChevronDown, ChevronRight, Circle, Crown, MoreVertical, User, UserRound } from "lucide-react";
+import { observer } from "mobx-react";
+import { useParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 
 const workspaceService = new WorkspaceService();
 
@@ -334,13 +335,9 @@ const OrganogramTree = observer(() => {
     <div className="bg-custom-background-100 rounded-lg shadow-sm border border-custom-border-200 overflow-hidden">
       {/* Add Position Button - Top Right */}
       <div className="flex justify-end p-4 border-b border-custom-border-200 bg-custom-background-100">
-        <button
-          onClick={() => handleAddPosition(null)}
-          className="px-4 py-2 bg-custom-primary-100 text-white rounded-md hover:bg-custom-primary-200 transition-colors flex items-center gap-2"
-        >
-          <span>➕</span>
+        <Button size="md" className="items-center gap-1" onClick={() => handleAddPosition(null)}>
           Add New Position
-        </button>
+        </Button>
       </div>
       {/* Table */}
       <div className="overflow-x-auto bg-custom-background-100">
@@ -376,18 +373,6 @@ const OrganogramTree = observer(() => {
               const assignedUsers = node.assigned_users || [];
               const level = node.level || 0;
 
-              // Check if this is the last child of its parent
-              const isLastChild = (() => {
-                if (level === 0) return true;
-                const siblings = visibleNodes.filter((n) => n.parent === node.parent && (n.level || 0) === level);
-                const sortedSiblings = siblings.sort((a, b) => {
-                  const aIndex = visibleNodes.findIndex((n) => n.id === a.id);
-                  const bIndex = visibleNodes.findIndex((n) => n.id === b.id);
-                  return aIndex - bIndex;
-                });
-                return sortedSiblings[sortedSiblings.length - 1]?.id === node.id;
-              })();
-
               return (
                 <tr
                   key={node.id}
@@ -398,77 +383,44 @@ const OrganogramTree = observer(() => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-custom-text-100">{node.id}</td>
 
                   {/* Positions Column */}
-                  <td className="px-6 py-4 whitespace-nowrap relative">
-                    <div className="flex items-center relative">
-                      {/* Hierarchy Lines */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`flex items-center ${getIndentClass(level)}`}>
+                      {/* Hierarchy Lines - Simple connector for non-root nodes */}
                       {level > 0 && (
-                        <div className="absolute left-0 top-0 bottom-0 flex">
-                          {Array.from({ length: level }).map((_, idx) => {
-                            const isLastLevel = idx === level - 1;
-                            const shouldDrawVertical = !isLastLevel || !isLastChild;
-
-                            return (
-                              <div key={idx} className="relative" style={{ width: "24px" }}>
-                                {/* Vertical line */}
-                                {shouldDrawVertical && (
-                                  <div
-                                    className="absolute left-1/2 top-0 bottom-0 w-px bg-custom-border-300"
-                                    style={{ transform: "translateX(-50%)" }}
-                                  />
-                                )}
-                                {/* Horizontal connector for last level */}
-                                {isLastLevel && (
-                                  <>
-                                    <div
-                                      className="absolute left-1/2 top-1/2 w-3 h-px bg-custom-border-300"
-                                      style={{ transform: "translateX(-50%) translateY(-50%)" }}
-                                    />
-                                    {/* Corner connector */}
-                                    {!isLastChild && (
-                                      <div
-                                        className="absolute left-1/2 top-1/2 bottom-0 w-px bg-custom-border-300"
-                                        style={{ transform: "translateX(-50%)" }}
-                                      />
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            );
-                          })}
+                        <div className="flex items-center mr-3">
+                          <div className="w-4 h-px bg-custom-border-300" />
+                          <div className="w-2 h-2 bg-custom-border-300 rounded-full border border-custom-background-100" />
                         </div>
                       )}
-
-                      <div className={`flex items-center ${getIndentClass(level)} relative z-10`}>
-                        {/* Expand/Collapse Button or Leaf Node Indicator */}
-                        <div className="mr-2 w-4 h-4 flex items-center justify-center">
-                          {hasChildren ? (
-                            <button
-                              className="p-0.5 hover:bg-custom-background-80 rounded transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleExpand(node.id);
-                              }}
-                            >
-                              {node.isExpanded ? (
-                                <ChevronDown className="w-3.5 h-3.5 text-custom-text-300" />
-                              ) : (
-                                <ChevronRight className="w-3.5 h-3.5 text-custom-text-300" />
-                              )}
-                            </button>
-                          ) : (
-                            <Circle className="w-2 h-2 text-custom-text-400 fill-current" />
-                          )}
-                        </div>
-                        {/* Position Name */}
-                        <span className="text-sm font-medium text-custom-text-100">{node.name}</span>
-                        {/* Actions Button (appears on hover) */}
+                      {/* Expand/Collapse Button */}
+                      {hasChildren ? (
                         <button
-                          className="ml-2 p-1 opacity-0 group-hover:opacity-100 hover:bg-custom-background-80 rounded transition-all"
-                          onClick={(e) => handleRightClick(e, node)}
+                          className="mr-2 p-1 hover:bg-custom-background-80 rounded transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpand(node.id);
+                          }}
                         >
-                          <MoreVertical className="w-4 h-4 text-custom-text-400" />
+                          {node.isExpanded ? (
+                            <ChevronDown className="w-4 h-4 text-custom-text-300" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-custom-text-300" />
+                          )}
                         </button>
-                      </div>
+                      ) : (
+                        <div className="mr-2 w-4 h-4 flex items-center justify-center">
+                          <Circle className="w-2 h-2 text-custom-text-400 fill-current" />
+                        </div>
+                      )}
+                      {/* Position Name */}
+                      <span className="text-sm font-medium text-custom-text-100">{node.name}</span>
+                      {/* Actions Button (appears on hover) */}
+                      <button
+                        className="ml-2 p-1 opacity-0 group-hover:opacity-100 hover:bg-custom-background-80 rounded transition-all"
+                        onClick={(e) => handleRightClick(e, node)}
+                      >
+                        <MoreVertical className="w-4 h-4 text-custom-text-400" />
+                      </button>
                     </div>
                   </td>
 
