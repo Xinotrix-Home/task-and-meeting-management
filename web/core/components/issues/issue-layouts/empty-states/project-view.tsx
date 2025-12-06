@@ -1,8 +1,8 @@
-import { observer } from "mobx-react";
 import { PlusIcon } from "lucide-react";
+import { observer } from "mobx-react";
 // components
-import { EIssuesStoreType, EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { EmptyState } from "@/components/common";
+import { EIssuesStoreType, EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 // constants
 // hooks
 import { useCommandPalette, useEventTracker, useUserPermissions } from "@/hooks/store";
@@ -30,10 +30,10 @@ export const ProjectViewEmptyState: React.FC = observer(() => {
         primaryButton={
           isCreatingIssueAllowed
             ? {
-                text: "New work item",
+                text: "New task",
                 icon: <PlusIcon className="h-3 w-3" strokeWidth={2} />,
                 onClick: () => {
-                  setTrackElement("View work item empty state");
+                  setTrackElement("View task empty state");
                   toggleCreateIssueModal(true, EIssuesStoreType.PROJECT_VIEW);
                 },
               }

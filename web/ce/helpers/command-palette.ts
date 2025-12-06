@@ -8,8 +8,8 @@ export const getGlobalShortcutsList: () => TCommandPaletteActionList = () => {
 
   return {
     c: {
-      title: "Create a new work item",
-      description: "Create a new work item in the current project",
+      title: "Create a new task",
+      description: "Create a new task in the current project",
       action: () => toggleCreateIssueModal(true),
     },
   };

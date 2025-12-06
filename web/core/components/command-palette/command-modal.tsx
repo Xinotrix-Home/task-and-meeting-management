@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 import { Command } from "cmdk";
+import { CommandIcon, FolderPlus, Search, Settings, X } from "lucide-react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
-import { CommandIcon, FolderPlus, Search, Settings, X } from "lucide-react";
-import { Dialog, Transition } from "@headlessui/react";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel, WORKSPACE_DEFAULT_SEARCH_RESULT } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
@@ -354,7 +354,7 @@ export const CommandModal: React.FC = observer(() => {
                                 >
                                   <div className="flex items-center gap-2 text-custom-text-200">
                                     <LayersIcon className="h-3.5 w-3.5" />
-                                    Create new work item
+                                    Create new task
                                   </div>
                                   <kbd>C</kbd>
                                 </Command.Item>

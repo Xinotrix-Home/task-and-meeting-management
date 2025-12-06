@@ -5,6 +5,7 @@ import { useWorkspace } from "@/hooks/store";
 import { useOrganogram } from "@/hooks/store/use-organogram";
 import { WorkspaceService } from "@/plane-web/services";
 import { IOrganogramPosition } from "@/services/organogram";
+import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/ui";
 import { ChevronDown, ChevronRight, Circle, Crown, MoreVertical, User, UserRound } from "lucide-react";
 import { observer } from "mobx-react";
@@ -101,6 +102,7 @@ const OrganogramTree = observer(() => {
   const { workspaceSlug } = useParams();
   const organogramStore = useOrganogram();
   const { getWorkspaceBySlug } = useWorkspace();
+  const { t } = useTranslation();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -539,7 +541,7 @@ const OrganogramTree = observer(() => {
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-custom-background-100 p-6 rounded-lg w-[500px] max-w-[90vw] shadow-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-custom-text-100">Create New Position</h2>
+            <h2 className="text-base font-bold mb-4 text-custom-text-100">Create New Position</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-custom-text-200 mb-1">
@@ -550,7 +552,7 @@ const OrganogramTree = observer(() => {
                   value={newPosition.name}
                   onChange={(e) => setNewPosition({ ...newPosition, name: e.target.value })}
                   placeholder="e.g., Engineering Manager, CEO, etc."
-                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100 text-base"
                   autoFocus
                 />
                 <p className="text-xs text-custom-text-400 mt-1">This name must be unique within the workspace</p>
@@ -566,7 +568,7 @@ const OrganogramTree = observer(() => {
                       parent: e.target.value || null,
                     })
                   }
-                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100 text-base"
                 >
                   <option value="">None (Root Position)</option>
                   {parentPositionOptions.map((position) => {
@@ -592,7 +594,7 @@ const OrganogramTree = observer(() => {
                   onChange={(e) =>
                     setNewPosition({ ...newPosition, authority: e.target.value as "none" | "head" | "line_manager" })
                   }
-                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100 text-base"
                 >
                   <option value="none">None - Multiple users can be assigned</option>
                   <option value="head">Head - Only one user can be assigned (Leadership position)</option>
@@ -613,11 +615,11 @@ const OrganogramTree = observer(() => {
                   onChange={(e) => setNewPosition({ ...newPosition, description: e.target.value })}
                   placeholder="Optional description of the position's responsibilities..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100 resize-none"
+                  className="w-full px-3 py-2 border border-custom-border-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-primary-100 text-custom-text-100 bg-custom-background-100 resize-none text-base"
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-custom-border-200">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-custom-border-200 text-base">
               <button
                 className="px-4 py-2 text-custom-text-300 border border-custom-border-300 rounded-md hover:bg-custom-background-90 transition-colors"
                 onClick={() => {
