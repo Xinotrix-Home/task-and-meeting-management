@@ -367,7 +367,7 @@ const OrganogramTree = observer(() => {
 
           {/* Body */}
           <tbody className="bg-custom-background-100 divide-y divide-custom-border-200">
-            {visibleNodes.map((node) => {
+            {visibleNodes.map((node, idx) => {
               // Check if node has children by checking both children_count and actual children in store
               const childrenCount = node.children_count || 0;
               const hasChildrenInStore = organogramStore.positions.some((pos) => pos.parent === node.id);
@@ -382,7 +382,7 @@ const OrganogramTree = observer(() => {
                   onContextMenu={(e) => handleRightClick(e, node)}
                 >
                   {/* ID Column */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-custom-text-100">{node.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-custom-text-100">{idx + 1}</td>
 
                   {/* Positions Column */}
                   <td className="px-6 py-4 whitespace-nowrap">
